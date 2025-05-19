@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.chrome.options import Options
 
 load_dotenv()
 
@@ -42,7 +43,11 @@ class Login:
 
     def __init__(self):
         chromedriver_autoinstaller.install()
-        self.driver = webdriver.Chrome()
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--window-size=1920,1080')
+        self.driver = webdriver.Chrome(options=chrome_options)
         self.userId = os.getenv("USER_ID")
         self.password = os.getenv("PASSWORD")
         self.sms_code = os.getenv("SMS_CODE")
@@ -174,5 +179,5 @@ if __name__ == "__main__":
             break
         session.send_message(message)
         session.messages.append(message)
-        response = session.wait_for_response(session)
+        response = session.check_for_response(session)
         print(f"Response: {response}")
