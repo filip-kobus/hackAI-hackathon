@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
+from selenium.common.exceptions import StaleElementReferenceException
 
 load_dotenv()
 
@@ -45,8 +46,8 @@ class Login:
         self.userId = os.getenv("USER_ID")
         self.password = os.getenv("PASSWORD")
         self.sms_code = os.getenv("SMS_CODE")
-        self.bot_messages = []
-        self.customer_messages = []
+        self.bot_elements = []
+        self.customer_elements = []
         self.messages = []
 
     def open_page(self):
@@ -115,45 +116,63 @@ class Login:
     def load_history(self):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
         wait = WebDriverWait(shadow_root, 10)
-        bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
-        customer_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.user_message)))
-
-        for element in bot_elements:
-            bot_message = self.driver.execute_script('return arguments[0].shadowRoot', element)
-            message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
-            self.bot_messages.append(message)
-
-        for element in customer_elements:
-            customer_message = self.driver.execute_script('return arguments[0].shadowRoot', element)
-            message = customer_message.find_element(By.CSS_SELECTOR, 'p[class="wrapLine"]').text
-            self.customer_messages.append(message)
-
+        self.bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
+        self.customer_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.user_message)))
         self.concatenate_messages()
 
     def concatenate_messages(self):
-        bot_size = len(self.bot_messages)
-        customer_size = len(self.customer_messages)
-        max_size = max(bot_size, customer_size)
+        max_size = max(len(self.bot_elements), len(self.customer_elements))
 
         for i in range(max_size):
-            if i < customer_size:
-                self.messages.append(self.customer_messages[i])
-            if i < bot_size:
-                self.messages.append(self.bot_messages[i])
+            bot_message = self.driver.execute_script('return arguments[0].shadowRoot', self.bot_elements[i])
+            message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
+            self.messages.append(message)
+
+            if i == len(self.customer_elements):
+                break
+            customer_message = self.driver.execute_script('return arguments[0].shadowRoot', self.customer_elements[i])
+            message = customer_message.find_element(By.CSS_SELECTOR, 'p[class="wrapLine"]').text
+            self.messages.append(message)
 
     def load_response(self):
-        pass
+        shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
+        wait = WebDriverWait(shadow_root, 10)
+        try:
+            bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
+            latest = bot_elements[-1]
+
+            if latest not in self.bot_elements:
+                self.bot_elements.append(latest)
+                bot_message = self.driver.execute_script('return arguments[0].shadowRoot', latest)
+                message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
+                self.messages.append(message)
+                return message
+        except StaleElementReferenceException:
+            print("StaleElementReferenceException occurred. Retrying...")
+            return self.load_response()
+
+        return None
+
+    def check_for_response(self, session):
+        response = None
+        while response is None:
+            response = session.load_response()
+            if response is None:
+                sleep(1)
+        return response
 
 if __name__ == "__main__":
     session = Login()
     session.open_page()
     session.initialize()
     session.load_history()
-    for message in session.messages:  # Fixed incorrect reference to self.messages
-        print(message)
+
     while True:
         print("Enter your message:")
         message = input()
         if message.lower() == "exit":
             break
         session.send_message(message)
+        session.messages.append(message)
+        response = session.wait_for_response(session)
+        print(f"Response: {response}")
