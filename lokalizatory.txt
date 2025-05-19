@@ -1,0 +1,10 @@
+mbank-chat sh> chat-minimized sh> chat-tooltip sh> chat-badge sh> chat-icon-button sh> data-test-id="chat:chat-icon" <- przycisk do otworzenia chatu
+
+mbank-chat sh> mbank-tabs > horizontal-layout > button[@id=tab-1] <- tab z czatem
+
+mbank-chat sh> mbank-tabs > mbank-tab[id="tabpanel-1"] > chat-base > mbank-chat-textbox > textarea[id="textbox"] <- wpisywanie wiadomosci
+
+										    …   > chat-icon-button[id="send-button"] <- wysylanie wiadomości
+
+mbank-chat sh> mbank-tabs > mbank-tab[id="tabpanel-1"] > chat-base > mbank-chat-messages-container > mbank-chat-message-customer/mbank-chat-message-bot sr> class="groupHeader small-text" <- (to jest data)
+mbank-chat sh> mbank-tabs > mbank-tab[id="tabpanel-1"] > chat-base > mbank-chat-messages-container > mbank-chat-message-customer/mbank-chat-message-bot sr> class="textContent" <- to jest zawartość wiadomości

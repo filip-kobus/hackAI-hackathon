@@ -26,11 +26,14 @@ class CSS_SELECTORS:
     chat_tab_button = 'button[id="tab-1"]'
     chat_input_field = 'textarea[id="textbox"]'
     chat_send_button = 'chat-icon-button'
+    bot_message = 'mbank-chat-message-bot'
+    user_message = 'mbank-chat-message-customer'
 
 class ShadowRoot_Routes:
     chat_icon_route = ["mbank-chat", "chat-minimized", "chat-icon-button"]
     chat_tab_route = ["mbank-chat", "mbank-tabs"]
     chat_input_route = ["mbank-chat", "chat-base", "mbank-chat-textbox"]
+    chat_messages_route = ["mbank-chat", "chat-base", "mbank-chat-messages-container"]
 
 class Login:
     URL = "https://urev.online.mbank.pl/pl/Login"
@@ -42,6 +45,9 @@ class Login:
         self.userId = os.getenv("USER_ID")
         self.password = os.getenv("PASSWORD")
         self.sms_code = os.getenv("SMS_CODE")
+        self.bot_messages = []
+        self.customer_messages = []
+        self.messages = []
 
     def open_page(self):
         self.driver.get(self.URL)
@@ -84,11 +90,13 @@ class Login:
     def click_chat_icon(self):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_icon_route)
         chat_button = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_icon_button)
+        sleep(1)
         chat_button.click()
 
     def click_chat_tab(self):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_tab_route)
         chat_tab = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_tab_button)
+        sleep(1)
         chat_tab.click()
 
     def send_message(self, message):
@@ -104,10 +112,45 @@ class Login:
         self.click_chat_icon()
         self.click_chat_tab()        
 
+    def load_history(self):
+        shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
+        wait = WebDriverWait(shadow_root, 10)
+        bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
+        customer_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.user_message)))
+
+        for element in bot_elements:
+            bot_message = self.driver.execute_script('return arguments[0].shadowRoot', element)
+            message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
+            self.bot_messages.append(message)
+
+        for element in customer_elements:
+            customer_message = self.driver.execute_script('return arguments[0].shadowRoot', element)
+            message = customer_message.find_element(By.CSS_SELECTOR, 'p[class="wrapLine"]').text
+            self.customer_messages.append(message)
+
+        self.concatenate_messages()
+
+    def concatenate_messages(self):
+        bot_size = len(self.bot_messages)
+        customer_size = len(self.customer_messages)
+        max_size = max(bot_size, customer_size)
+
+        for i in range(max_size):
+            if i < customer_size:
+                self.messages.append(self.customer_messages[i])
+            if i < bot_size:
+                self.messages.append(self.bot_messages[i])
+
+    def load_response(self):
+        pass
+
 if __name__ == "__main__":
     session = Login()
     session.open_page()
     session.initialize()
+    session.load_history()
+    for message in session.messages:  # Fixed incorrect reference to self.messages
+        print(message)
     while True:
         print("Enter your message:")
         message = input()
