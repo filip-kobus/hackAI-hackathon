@@ -3,3 +3,6 @@ selenium
 dotenv
 fastapi
 uvicorn
+
+#prompt_model
+openai
