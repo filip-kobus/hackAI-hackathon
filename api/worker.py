@@ -6,6 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.chrome.options import Options
 
 load_dotenv()
 
@@ -26,22 +28,32 @@ class CSS_SELECTORS:
     chat_tab_button = 'button[id="tab-1"]'
     chat_input_field = 'textarea[id="textbox"]'
     chat_send_button = 'chat-icon-button'
+    bot_message = 'mbank-chat-message-bot'
+    user_message = 'mbank-chat-message-customer'
 
 class ShadowRoot_Routes:
     chat_icon_route = ["mbank-chat", "chat-minimized", "chat-icon-button"]
     chat_tab_route = ["mbank-chat", "mbank-tabs"]
     chat_input_route = ["mbank-chat", "chat-base", "mbank-chat-textbox"]
+    chat_messages_route = ["mbank-chat", "chat-base", "mbank-chat-messages-container"]
 
-class Login:
+class SeleniumWorker:
     URL = "https://urev.online.mbank.pl/pl/Login"
-    WAIT_TIME = 45
+    WAIT_TIME = 150
 
     def __init__(self):
         chromedriver_autoinstaller.install()
-        self.driver = webdriver.Chrome()
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--window-size=1920,1080')
+        self.driver = webdriver.Chrome(options=chrome_options)
         self.userId = os.getenv("USER_ID")
         self.password = os.getenv("PASSWORD")
         self.sms_code = os.getenv("SMS_CODE")
+        self.bot_elements = []
+        self.customer_elements = []
+        self.messages = []
 
     def open_page(self):
         self.driver.get(self.URL)
@@ -84,11 +96,13 @@ class Login:
     def click_chat_icon(self):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_icon_route)
         chat_button = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_icon_button)
+        sleep(1)
         chat_button.click()
 
     def click_chat_tab(self):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_tab_route)
         chat_tab = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_tab_button)
+        sleep(1)
         chat_tab.click()
 
     def send_message(self, message):
@@ -98,19 +112,80 @@ class Login:
         chat_send_button = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_send_button)
         chat_send_button.click()
 
+        self.messages.append(message)
+
     def initialize(self):
         self.login()
+        print("logged in")
         self.confirm_sms()
+        print("confirmed sms")
         self.click_chat_icon()
         self.click_chat_tab()        
 
+    def load_history(self):
+        shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
+        wait = WebDriverWait(shadow_root, 10)
+        self.bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
+        self.customer_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.user_message)))
+        self.concatenate_messages()
+
+    def concatenate_messages(self):
+        max_size = max(len(self.bot_elements), len(self.customer_elements))
+
+        for i in range(max_size):
+            bot_message = self.driver.execute_script('return arguments[0].shadowRoot', self.bot_elements[i])
+            message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
+            self.messages.append(message)
+
+            if i == len(self.customer_elements):
+                break
+            customer_message = self.driver.execute_script('return arguments[0].shadowRoot', self.customer_elements[i])
+            message = customer_message.find_element(By.CSS_SELECTOR, 'p[class="wrapLine"]').text
+            self.messages.append(message)
+
+    def load_response(self):
+        shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
+        wait = WebDriverWait(shadow_root, 10)
+        message = None
+
+        try:
+            bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
+            diff = len(bot_elements) - len(self.bot_elements)
+
+            for i in range(diff, 0, -1):
+                latest = bot_elements[-diff]
+                if latest not in self.bot_elements:
+                    self.bot_elements.append(latest)
+                    bot_message = self.driver.execute_script('return arguments[0].shadowRoot', latest)
+                    message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
+                    self.messages.append(message)
+
+        except StaleElementReferenceException:
+            print("StaleElementReferenceException occurred. Retrying...")
+            return self.load_response()
+
+        return message
+
+    def check_for_response(self, session):
+        response = None
+        while response is None:
+            response = session.load_response()
+            if response is None:
+                sleep(1)
+        return response
+
 if __name__ == "__main__":
-    session = Login()
+    session = SeleniumWorker()
     session.open_page()
     session.initialize()
+    session.load_history()
+
     while True:
         print("Enter your message:")
         message = input()
         if message.lower() == "exit":
             break
         session.send_message(message)
+        session.messages.append(message)
+        response = session.check_for_response(session)
+        print(f"Response: {response}")
