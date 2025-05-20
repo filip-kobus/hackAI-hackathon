@@ -130,7 +130,7 @@ class SeleniumWorker:
         self.concatenate_messages()
 
     def concatenate_messages(self):
-        max_size = max(len(self.bot_elements), len(self.customer_elements))
+        max_size = len(self.bot_elements)
 
         for i in range(max_size):
             bot_message = self.driver.execute_script('return arguments[0].shadowRoot', self.bot_elements[i])
@@ -153,7 +153,7 @@ class SeleniumWorker:
             diff = len(bot_elements) - len(self.bot_elements)
 
             for i in range(diff, 0, -1):
-                latest = bot_elements[-diff]
+                latest = bot_elements[-i]
                 if latest not in self.bot_elements:
                     self.bot_elements.append(latest)
                     bot_message = self.driver.execute_script('return arguments[0].shadowRoot', latest)
