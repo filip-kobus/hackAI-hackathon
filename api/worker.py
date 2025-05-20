@@ -44,7 +44,7 @@ class SeleniumWorker:
     def __init__(self):
         chromedriver_autoinstaller.install()
         chrome_options = Options()
-        chrome_options.add_argument('--headless')
+        # chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--window-size=1920,1080')
         self.driver = webdriver.Chrome(options=chrome_options)
@@ -116,7 +116,9 @@ class SeleniumWorker:
 
     def initialize(self):
         self.login()
+        print("logged in")
         self.confirm_sms()
+        print("confirmed sms")
         self.click_chat_icon()
         self.click_chat_tab()        
 
@@ -144,21 +146,25 @@ class SeleniumWorker:
     def load_response(self):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
         wait = WebDriverWait(shadow_root, 10)
+        message = None
+
         try:
             bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
-            latest = bot_elements[-1]
+            diff = len(bot_elements) - len(self.bot_elements)
 
-            if latest not in self.bot_elements:
-                self.bot_elements.append(latest)
-                bot_message = self.driver.execute_script('return arguments[0].shadowRoot', latest)
-                message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
-                self.messages.append(message)
-                return message
+            for i in range(diff, 0, -1):
+                latest = bot_elements[-diff]
+                if latest not in self.bot_elements:
+                    self.bot_elements.append(latest)
+                    bot_message = self.driver.execute_script('return arguments[0].shadowRoot', latest)
+                    message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
+                    self.messages.append(message)
+
         except StaleElementReferenceException:
             print("StaleElementReferenceException occurred. Retrying...")
             return self.load_response()
 
-        return None
+        return message
 
     def check_for_response(self, session):
         response = None

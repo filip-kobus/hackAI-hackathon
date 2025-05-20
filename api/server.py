@@ -3,11 +3,15 @@ from pydantic import BaseModel
 from .worker import SeleniumWorker
 
 app = FastAPI()
-session = SeleniumWorker()
-session.open_page()
-session.initialize()
-print("Session initialized")
-session.load_history()
+
+def initialize_session():
+    global session
+    session = SeleniumWorker()
+    session.open_page()
+    session.initialize()
+    session.load_history()
+
+initialize_session()
 
 class MessageRequest(BaseModel):
     message: str
@@ -17,8 +21,12 @@ async def send_message(request: MessageRequest):
     message = request.message
     if not message:
         raise HTTPException(status_code=400, detail="Message is required")
-    session.send_message(message)
-    response = session.check_for_response(session)
+    try:
+        session.send_message(message)
+        response = session.check_for_response(session)
+    except Exception as e:
+        initialize_session()
+        raise HTTPException(status_code=500, detail=f"Error processing message: {str(e)}")
     return {"response": response}
 
 @app.get("/get_history")
