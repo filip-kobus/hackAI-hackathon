@@ -25,6 +25,7 @@ async def send_message(request: MessageRequest):
         session.send_message(message)
         response = session.check_for_response(session)
     except Exception as e:
+        print("reinitializing session")
         initialize_session()
         raise HTTPException(status_code=500, detail=f"Error processing message: {str(e)}")
     return {"response": response}

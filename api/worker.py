@@ -39,7 +39,7 @@ class ShadowRoot_Routes:
 
 class SeleniumWorker:
     URL = "https://urev.online.mbank.pl/pl/Login"
-    WAIT_TIME = 45
+    WAIT_TIME = 150
 
     def __init__(self):
         chromedriver_autoinstaller.install()
