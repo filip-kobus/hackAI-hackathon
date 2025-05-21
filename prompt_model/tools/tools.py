@@ -1,12 +1,12 @@
 import datetime
 
 # === ZAPIS ODPOWIEDZI DO PLIKU ===
-def save_response_to_file(agent_message="!No message received!", mbank_message="!No message received!", importance_level=0):
-    SAVEPATH="prompt_model/logs/chatlog.txt"
-    with open(f"{SAVEPATH}_{importance_level}", "a", encoding="utf-8") as f:
-        f.write(f"\n--- {datetime.datetime.now()}:{importance_level} ---\n")
-        f.write(f"AI:\n> {agent_message}\n")
-        f.write(f"mBank:\n> {mbank_message}")
+def save_response_to_file(agent_message="!No message received!", mbank_message="!No message received!", importance_level=0, chat_id="unknown_chat_id"):
+    SAVEPATH=f"prompt_model/logs/{importance_level}/chatlog_{chat_id}.txt"
+    with open(f"{SAVEPATH}", "a", encoding="utf-8") as f:
+        f.write(f"\n--- {datetime.datetime.now()} ---\n")
+        f.write(f"user:\n> {agent_message}\n")
+        f.write(f"chat:\n> {mbank_message}")
 
 # save_tool = {
 #     "type": "function",

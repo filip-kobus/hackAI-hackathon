@@ -56,7 +56,6 @@ class SeleniumWorker:
 
     def open_page(self):
         self.driver.get(self.URL)
-        self.driver.maximize_window()
 
     def login(self):
         wait = WebDriverWait(self.driver, self.WAIT_TIME)
@@ -107,9 +106,13 @@ class SeleniumWorker:
     def send_message(self, message):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_input_route)
         chat_input = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_input_field)
-        chat_input.send_keys(message)
-        chat_send_button = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_send_button)
-        chat_send_button.click()
+        try:
+            chat_input.send_keys(message)
+            chat_send_button = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_send_button)
+            chat_send_button.click()
+        except Exception as e:
+            print(f"Error while sending a message: {e}")
+            self.isReloading = True
 
     def load_bot_messages(self):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
@@ -174,7 +177,7 @@ if __name__ == "__main__":
             if message.lower() == "exit":
                 break
             session.send_message(message)
-            response = session.check_for_response(session)
+            response = session.check_for_response()
             print(f"Response: {response}")
             sleep(0.1)
         else:
