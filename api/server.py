@@ -10,6 +10,14 @@ def initialize_session():
     session.open_page()
     session.initialize()
 
+def restart_session():
+    global session
+    if session:
+        session.kill_session()
+    session = SeleniumWorker()
+    session.open_page()
+    session.initialize()
+
 initialize_session()
 
 class MessageRequest(BaseModel):
@@ -17,19 +25,16 @@ class MessageRequest(BaseModel):
 
 @app.post("/send_message")
 async def send_message(request: MessageRequest):
-    message = request.message
-
-    if not session.is_chat_window_present():
-        print("Chat window is not present. Reloading session.")
-        initialize_session() 
-
-    if not message:
-        raise HTTPException(status_code=400, detail="Message is required")
     try:
+        message = request.message
+        session.is_chat_window_present()
+        if not message:
+            raise HTTPException(status_code=400, detail="Message is required")
+
         session.send_message(message)
-        response = session.check_for_response(session)
+        response = session.check_for_response()
+        return {"response": response}
     except Exception as e:
-        print("reinitializing session")
-        initialize_session()
-        raise HTTPException(status_code=500, detail=f"Error processing message: {str(e)}")
-    return {"response": response}
+        print(f"Error: {e}")
+        restart_session()
+        raise HTTPException(status_code=500, detail="An error occurred while processing the request")

@@ -146,24 +146,21 @@ class SeleniumWorker:
         return extracted_message
 
     def is_chat_window_present(self):
-        try:
-            shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_input_route)
-            chat_input = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_input_field)
-            return chat_input is not None
-        except Exception:
-            return False
+        shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_input_route)
+        chat_input = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_input_field)
 
-    def check_for_response(self, session):
+    def check_for_response(self):
         response = None
         while response is None:
-            self.isReloading = self.is_chat_window_present()
-            if not self.isReloading:
-                return None
-
-            response = session.load_response()
+            response = self.load_response()
             if response is None:
                 sleep(0.25)
         return response
+
+    def kill_session(self):
+        if self.driver:
+            self.driver.quit()
+            print("Selenium session terminated.")
 
 if __name__ == "__main__":
     session = SeleniumWorker()
