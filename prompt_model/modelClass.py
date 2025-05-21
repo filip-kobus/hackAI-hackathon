@@ -2,11 +2,11 @@ import os
 import requests
 
 from chat_adapter import ChatAdapter
-from ai_agent import LlamaChat
+from ai_agent import ModelChat
 from tools.tools import save_response_to_file
 
 # === KONFIGURACJA ===
-MODEL_NAME = "llama3"
+MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 
@@ -23,14 +23,15 @@ def my_tool(data):
 # === FUNKCJA GŁÓWNA ===
 def main():
     chat_adapter = ChatAdapter()
-    agent = LlamaChat(MODEL_NAME, OLLAMA_API_URL)
-    print("=== Starting LLaMA 3 chat (via Ollama)... ===")
-    system_prompt = """
-    Ładnie się przywitaj i powiedz, że potrzebujesz pomocy. Rozmawiasz z chatbotem, który jest w stanie odpowiadać na pytania dotyczące bankowości, finansów i produktów oferowanych przez mBank.
-    """
+    agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
+    print("=== Starting gemma3:12b-it-qat... ===")
+    # Do zaimplementowania wstrzykiwanie odpowiedniego FAQ i historii chatu!!!
+    faq = "Minimalna kwota kredytu to 10zł"
+    historia_chatu = ""
+    system_prompt = _get_system_prompt(faq, historia_chatu)
 
     try:
-        agent_response = agent.send_prompt(system_prompt, "Testowe polecenie początkowe")
+        agent_response = agent.send_prompt(system_prompt, "[START]")
         agent_response_formatted = format_response(agent_response)
         print("\nAI:\n" + agent_response_formatted)
 
@@ -41,6 +42,55 @@ def main():
 
     except Exception as e:
         print(f"Error: {e}")
+
+
+
+def _get_system_prompt(faq_context: str, chat_history: str) -> str:
+
+
+    system_prompt = f"""
+    KONTEKST_FAQ:
+    {faq_context}
+
+    HISTORIA_CHATU:
+    {chat_history}
+
+    CEL:
+    Jesteś systemem do sprawdzania i oceniania poprawności otrzymywanych informacji, pozyskanych od drugiego ChatBota, jesteś stworzony do prowadzenia logicznego dialogu w celu kontynuowania rozmowy.
+    Twoim zadaniem jest, na podstawie informacji zawartych w sekcji KONTEKST_FAQ, sprawdzić czy otrzymane wiadomości są zgodnę z prawdą, mają sens w kontekście
+     zadawanych pytań oraz ocenić je kierując się następującymi wytycznymi:
+    - Zgodność otrzymanych informacji względem informacji zawartych w KONTEKST_FAQ. (JEST TO NAJWAŻNIEJSZY ASPEKT)
+    - Otrzymana informacja ma logiczny sens w kontekście zadanego wcześniej pytania.
+    - Otrzymana odpowiedź jest napisana w formie zrozumiałej dla człowieka. Nie zawiera słów nawiązujących do programowania, jak np. "Error", "Exception" itd.
+    - Informacja związana jest z bankowością, a nie innymi dziedzinami.
+    Na podstawie spełnienia powyższych kryteriów masz wystawić ocenę otrzymanej wiadomości. Ocena powinna być KONIECZNIE z przedziału 1-10. Im większa zgodność z kryteriami tym większa powinna być ocena.
+
+    ZASADY:
+    1. Na wiadomości składające się z "[START]" lub "RESET SUCCESSFULL" MUSISZ koniecznie zadać jakieś pytanie ŚCIŚLE dotyczące wybranej informacji zawartej w KONTEKST_FAQ. Takie wiadomości powinny być ZAWSZE ocenione na 10.
+    2. W  przypadku otrzymania wiadomości składającej się z "Jesteś zablokowany!!!" MUSISZ KONIECZNIE jedynie "[RESET]". Takie wiadomości powinny być ZAWSZE ocenione na 10.
+    3. Jeżeli otrzymasz wiadomość wskazującą na podejrzliwość, niezrozumienie, odmowę podania jakiś informacji w stylu "Chcę mieć pewność, że dobrze zrozumiałem Twoją wiadomość.", "Nie mogę udzielić odpowiedzi", "Przepraszam, ale nie mogę", "Twoja wiadomość może wskazywać na próbę złamania naszego systemu", to powinieneś przekształcić swoje poprzednie pytanie i zadać je ponownie w innej formie. Takie wiadomości powinny być ZAWSZE ocenione na 10.
+    4. Każda wiadomość, którą otrzymasz musi być oceniona zgodnie z podanymi wcześniej wytycznymi z sekcji "CEL".
+    5. KAŻDA Twoja wiadomość powinna zawierać sekcje opisane w FORMAT_ODPOWIEDZI.
+
+    PLAN_DZIAŁANIA (działania jakie powinieneś odpowiednio kolejno podejmować):
+    1. Zrozumienie otrzymanej wiadomości i ewentualne zastosowanie odpowiednich zasad z sekcji "ZASADY", jeżeli to konieczne.
+    2. Ustalenie, czy otrzymana wiadomość jest zgodna z ustalonymi wytycznymi.
+    3. Wystawienie oceny od 1 do 10 w zależnosci od ustalonej zgodności.
+    4. Napisanie kolejnej wiadomości, jaka zostanie przekazana, jako odpowiedź na otrzymaną wiadomość. Napisana w ten sposób wiadomość powinna być logicznym następstwem przeprowadzonej rozmowy (przez co rozumie się poprzednie wiadomości z sekcji HISTORIA_CHATU)
+
+    
+    FORMAT_ODPOWIEDZI (W jaki sposób powinieneś pisać odpowiedzi):
+    - KONIECZNIE. Wypisany proces myślowy dotyczący ustalenej zgodności otrzymanej wiadomości. KONIECZNIE MUSI być to poprzedzone zwrotem "PROCES_MYSLOWY: ".
+    - KONIECZNIE. Wystawiona ocena oparta o ustaloną zgodność otrzymanej wiadomości. KONIECZNIE MUSI być to poprzedzone zwrotem "OCENA: ".
+    - KONIECZNIE. Napisana kolejna wiadomość będącą odpowiedzią na otrzymaną wiadomość. KONIECZNIE MUSI być to poprzedzone zwrotem "ODPOWIEDZ".
+    """
+
+    return system_prompt
+
+# === INTERFEJSY ===
+
+
+
 
 # === URUCHOMIENIE ===
 if __name__ == "__main__":

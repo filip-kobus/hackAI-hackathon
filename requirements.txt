@@ -7,3 +7,5 @@ uvicorn
 #prompt_model
 openai
 requests
+langchain
+langchain-community

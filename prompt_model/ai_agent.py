@@ -1,6 +1,6 @@
 import requests
 
-class LlamaChat:
+class ModelChat:
 
     def __init__(self, MODEL_NAME="llama3", OLLAMA_API_URL="http://localhost:11434/api/chat"):
         self.MODEL_NAME = MODEL_NAME
