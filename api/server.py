@@ -9,7 +9,6 @@ def initialize_session():
     session = SeleniumWorker()
     session.open_page()
     session.initialize()
-    session.load_history()
 
 initialize_session()
 
@@ -19,6 +18,11 @@ class MessageRequest(BaseModel):
 @app.post("/send_message")
 async def send_message(request: MessageRequest):
     message = request.message
+
+    if not session.is_chat_window_present():
+        print("Chat window is not present. Reloading session.")
+        initialize_session() 
+
     if not message:
         raise HTTPException(status_code=400, detail="Message is required")
     try:
@@ -29,7 +33,3 @@ async def send_message(request: MessageRequest):
         initialize_session()
         raise HTTPException(status_code=500, detail=f"Error processing message: {str(e)}")
     return {"response": response}
-
-@app.get("/get_history")
-async def get_history():
-    return {"messages": session.messages}

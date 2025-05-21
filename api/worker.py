@@ -51,9 +51,8 @@ class SeleniumWorker:
         self.userId = os.getenv("USER_ID")
         self.password = os.getenv("PASSWORD")
         self.sms_code = os.getenv("SMS_CODE")
-        self.bot_elements = []
-        self.customer_elements = []
-        self.messages = []
+        self.bot_messages = []
+        self.isReloading = True
 
     def open_page(self):
         self.driver.get(self.URL)
@@ -112,80 +111,74 @@ class SeleniumWorker:
         chat_send_button = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_send_button)
         chat_send_button.click()
 
-        self.messages.append(message)
+    def load_bot_messages(self):
+        shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
+        wait = WebDriverWait(shadow_root, 10)
+        self.bot_messages = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
 
     def initialize(self):
         self.login()
-        print("logged in")
         self.confirm_sms()
-        print("confirmed sms")
         self.click_chat_icon()
-        self.click_chat_tab()        
-
-    def load_history(self):
-        shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
-        wait = WebDriverWait(shadow_root, 10)
-        self.bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
-        self.customer_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.user_message)))
-        self.concatenate_messages()
-
-    def concatenate_messages(self):
-        max_size = len(self.bot_elements)
-
-        for i in range(max_size):
-            bot_message = self.driver.execute_script('return arguments[0].shadowRoot', self.bot_elements[i])
-            message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
-            self.messages.append(message)
-
-            if i == len(self.customer_elements):
-                break
-            customer_message = self.driver.execute_script('return arguments[0].shadowRoot', self.customer_elements[i])
-            message = customer_message.find_element(By.CSS_SELECTOR, 'p[class="wrapLine"]').text
-            self.messages.append(message)
+        self.click_chat_tab()
+        self.load_bot_messages()
+        self.isReloading = False
 
     def load_response(self):
         shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_messages_route)
         wait = WebDriverWait(shadow_root, 10)
-        message = None
+        extracted_message = None
 
         try:
-            bot_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
-            diff = len(bot_elements) - len(self.bot_elements)
-
-            for i in range(diff, 0, -1):
-                latest = bot_elements[-i]
-                if latest not in self.bot_elements:
-                    self.bot_elements.append(latest)
-                    bot_message = self.driver.execute_script('return arguments[0].shadowRoot', latest)
-                    message = bot_message.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
-                    self.messages.append(message)
+            current_bot_messages = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, CSS_SELECTORS.bot_message)))
+            diff = len(current_bot_messages) - len(self.bot_messages)
+            if diff > 0:
+                latest = current_bot_messages[-1]
+                if latest not in self.bot_messages:
+                    self.bot_messages = current_bot_messages
+                    message_root = self.driver.execute_script('return arguments[0].shadowRoot', latest)
+                    extracted_message = message_root.find_element(By.CSS_SELECTOR, 'p[class="textContent"]').text
 
         except StaleElementReferenceException:
             print("StaleElementReferenceException occurred. Retrying...")
             return self.load_response()
 
-        return message
+        return extracted_message
+
+    def is_chat_window_present(self):
+        try:
+            shadow_root = self.get_nested_shadow_root(ShadowRoot_Routes.chat_input_route)
+            chat_input = shadow_root.find_element(By.CSS_SELECTOR, CSS_SELECTORS.chat_input_field)
+            return chat_input is not None
+        except Exception:
+            return False
 
     def check_for_response(self, session):
         response = None
         while response is None:
+            self.isReloading = self.is_chat_window_present()
+            if not self.isReloading:
+                return None
+
             response = session.load_response()
             if response is None:
-                sleep(1)
+                sleep(0.25)
         return response
 
 if __name__ == "__main__":
     session = SeleniumWorker()
     session.open_page()
     session.initialize()
-    session.load_history()
 
     while True:
-        print("Enter your message:")
-        message = input()
-        if message.lower() == "exit":
-            break
-        session.send_message(message)
-        session.messages.append(message)
-        response = session.check_for_response(session)
-        print(f"Response: {response}")
+        if not session.isReloading:
+            print("Enter your message:")
+            message = input()
+            if message.lower() == "exit":
+                break
+            session.send_message(message)
+            response = session.check_for_response(session)
+            print(f"Response: {response}")
+            sleep(0.1)
+        else:
+            session.initialize()
