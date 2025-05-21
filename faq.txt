@@ -1,0 +1,205 @@
+# Bezpieczeństwo
+### Jak bezpiecznie zalogować się na konto
+Prawidłowe adresy stron logowania na konto w mBanku:
+klienci indywidualni i firmowi: https://online.mbank.pl/pl/Login
+klienci private banking: https://online.mbank.pl/pl/LoginPB
+
+Identyfikatorem klienta może być: 
+8-cyfrowy numer klienta, który nadał Ci bank
+nazwa użytkownika (samodzielnie ustawiona przez Ciebie), która składa się z od 8 do 24 znaków alfanumerycznych
+numer karty, który składa się z 16 cyfr
+
+Podać znane tylko Tobie hasło
+
+### Jak bezpiecznie korzystać z bankowości na komputerze
+Przestrzegaj zasad bezpieczeństwa
+nie loguj się do banku z publicznie dostępnych sieci Wi-Fi
+pamiętaj, aby się wylogować z serwisu, gdy odchodzisz od komputera
+regularnie aktualizuj oprogramowanie komputera oraz korzystaj z programu antywirusowego
+nie używaj wyszukiwarek internetowych (Google, Yahoo, Bing i inne), aby wejść na stronę logowania – znalezione odpowiedzi mogą odsyłać do nieprawidłowych lub fałszywych stron
+adres strony banku zawsze wpisuj w przeglądarce internetowej (na samej górze w pasku przeglądarki)
+
+chroń swoje dane
+nigdy nie udostępniaj innym osobom swojego identyfikatora (ID klienta) ani hasła do konta, nie rób tego także wtedy, gdy nie masz pewności, czy jesteś na stronie mBanku (np. otrzymujesz link do strony logowania na maila, przez SMS lub komunikator) 
+upewnij się, że nikt nie widzi Twojego identyfikatora i hasła, kiedy je wpisujesz 
+nie zapisuj nigdzie haseł (hasła do serwisu, PIN-u do aplikacji mobilnej czy telekodu) 
+stosuj bezpieczne hasła
+
+### Jak rozpoznać prawdziwą stronę mBanku
+jak rozpoznać prawdziwą stronę mBanku
+upewnij się, że adres strony zaczyna się od https://
+sprawdź, czy w przeglądarce wyświetla się prawidłowy adres:
+klienci indywidualni: https://www.mbank.pl/indywidualny/
+klienci firmowi: https://www.mbank.pl/firmy
+klienci private banking: https://www.mbank.pl/private-banking
+klienci korporacyjni: https://www.mbank.pl/msp-korporacje
+sprawdź, czy w oknie przeglądarki przed adresem strony znajduje się ikona potwierdzająca, że połączenie jest szyfrowane:
+w przeglądarce Chrome jest to znak „tune” (kliknij go – jeśli pojawi się komunikat Połączenie jest bezpieczne z widoczną kłódką, to oznacza, że połączenie jest szyfrowane)
+w przeglądarkach innych niż Chrome – jest to znak kłódki
+jeżeli masz wątpliwości czy adres logowania jest prawdziwy, sprawdź go z pomocą CyberRescue
+upewnij się, czy certyfikat bezpieczeństwa jest prawidłowy – certyfikat powinien być wystawiony dla mBanku
+upewnij się, że w adresie strony nie ma, np. literówek
+
+### Korzystanie z kodów QR
+Wskazówki dotyczące bezpiecznego korzystania z kodów QR:
+
+w ustawieniach Twojego urządzenia włącz opcję wyświetlania adresu strony przed przejściem na nią - dzięki temu będziesz mieć kontrolę nad tym, jaką stronę otwierasz
+dokładnie sprawdź, czy strona z kodem QR jest prawdziwa
+zwróć uwagę na adres strony, który pojawia się po zeskanowaniu kodu, jeśli zobaczysz, że link jest skrócony, nie otwieraj go
+zanim zeskanujesz kod QR na plakacie lub tablicy w przestrzeni publicznej, przyjrzyj mu się dokładnie, aby upewnić się, że nie został naklejony inny kod QR,
+kody QR, podobnie jak kody kreskowe, mogą też zawierać cenne lub poufne informacje, dlatego nigdy nie publikuj w mediach społecznościowych zdjęć jakichkolwiek osobistych dokumentów, zawierających takie kody
+jeśli masz wątpliwość, czy QR kod przeniósł Cię na stronę oficjalnego sklepu, nie pobieraj aplikacji z takiej strony.
+
+# Bankowość moblina
+### Jak bezpiecznie pobrać aplikację
+zawsze pobieraj aplikację z oficjalnych sklepów – aplikacja z nieznanego źródła jest niebezpieczna dla Twoich pieniędzy i danych
+jeśli pobierasz aplikację przez kod QR – dokładnie sprawdź, czy strona z kodem QR jest prawdziwa
+w ustawieniach Twojego urządzenia włącz opcję wyświetlania adresu strony przed przejściem na nią - dzięki temu będziesz mieć kontrolę nad tym, jaką stronę otwierasz
+jeśli masz wątpliwość, czy QR kod przeniósł Cię na stronę oficjalnego sklepu, nie pobieraj aplikacji z takiej strony
+nigdy nie pobieraj aplikacji z linków, które dostajesz w SMS-ie, mailu, czy przez komunikator
+
+### Jak bezpiecznie połączyć aplikację z kontem
+Proces łączenia aplikacji z kontem zaprojektowaliśmy tak, aby zminimalizować ryzyko, że oszuści zyskają dostęp do Twojego konta.
+W trakcie łączenia aplikacji z kontem poprosimy Cię o wysłanie SMS-a z numeru telefonu, który masz zarejestrowany w banku. Dzięki temu oszuści, nawet jeśli podstępem wykradną Twoje dane, nie połączą aplikacji z Twoim kontem.
+
+### Bezpieczne metody logowania do aplikacji mobilnej
+PIN
+PIN to kod, który skład się z od 6 do 8 cyfr i ustalasz go samodzielnie. Logujesz się nim do aplikacji oraz zatwierdzasz operacje.
+Nie podawaj nikomu swojego PIN-u do aplikacji i pamiętaj, że pracownicy banku nigdy nie poproszą Cię o PIN.
+Ustaw inny PIN do aplikacji niż np. do karty czy odblokowania telefonu.
+Nigdy nie wpisuj PIN-u na stronach internetowych (w przeglądarce).
+Podczas podawania PIN-u zadbaj o to, aby nie podejrzała go inna osoba (szczególnie w miejscu publicznym).
+
+dane biometryczne
+Dane biometryczne to Twoje unikalne cechy, niemal niemożliwe do podrobienia przez cyberprzestępców. Do aplikacji mobilnej możesz zalogować się: odciskiem palca, skanem twarzy lub tęczówki.
+Nie dodawaj na swoim urządzeniu danych biometrycznych innych osób, bo mogą uzyskać dostęp do Twojego konta.
+
+### bezpieczne metody zatwierdzania operacji
+Aby zatwierdzić operacje, które zlecasz w serwisie transakcyjnym (np. potwierdzić przelew czy zmienić PIN do karty), możesz korzystać z:
+mobilnej autoryzacji lub
+haseł SMS.
+Najbezpieczniejszą metodą zatwierdzania operacji jest mobilna autoryzacja. Dlatego zalecamy – jeśli zatwierdzasz operacje za pomocą jednorazowych haseł SMS, jak najszybciej zacznij korzystać z mobilnej autoryzacji.
+
+# Mobilna autoryzacja
+### czym jest mobilna autoryzacja
+Mobilna autoryzacja to sposób potwierdzania operacji, które wykonujesz w serwisie transakcyjnym. Zamiast SMS-em, swoje przelewy lub inne operacje zatwierdzisz jednym kliknięciem w aplikacji mobilnej.
+
+Dzięki temu autoryzacja jest szybsza, a Ty nie musisz przepisywać długich haseł SMS. Dane operacji znajdziesz w powiadomieniu autoryzacyjnym w telefonie. Klikasz, zatwierdzasz i gotowe. Szybko i wygodnie.
+
+Gdy pobierzesz naszą aplikację i połączysz ją z kontem, będziesz potwierdzać operacje mobilną autoryzacją.
+
+### jak potwierdzać operacje mobilną autoryzacją
+Wykonaj operacje przelew lub inną operację w serwisie transakcyjnym
+Otrzymasz powiadomienie push Na ekranie Twojego telefonu pojawi się powiadomienie push. Kliknij powiadomienie, aby przejść dalej.
+Po kliknięciu powiadomienia, zaloguj się do aplikacji i wybierz Potwierdzam.
+
+### sprawdź, jak włączyć mobilną autoryzację
+Kliknij swoje imie (na profilu indywidualnym) lub nazwę firmy (na profilu firmowym) w lewym górnym rogu pulpitu, z rozwijanego menu wybierz mobilną autoryzację
+Kliknij aktywuj i zatwierdź swój wybór PIN-em i gotowe.
+
+### gdzie znajdziesz powiadomienia autoryzacyjne
+Zaloguj się do aplikacji. Kliknij w swoje imię (na profilu indywidualnym) lub w nazwę firmy (na profilu firmowym) w lewym górnym rogu pulpitu. Z rozwijanego menu wybierz mobilna autoryzacja
+Na liscie powiadomien wybierz operację, która czeka na autoryzację. Znajdziesz ją na górze ekranu. Jeśli wszystko się zgadza, wybierz Potwierdzam.
+
+### Jak zacząć korzystać z mobilnej autoryzacji?
+Jeśli do tej pory nie korzystałeś z aplikacji mobilnej:
+
+pobierz aplikację mBanku na telefon z systemem Android lub iOS
+aktywuj aplikację, łącząc ją ze swoim kontem w mBanku
+mobilna autoryzacja zostanie automatycznie aktywowana podczas procesu łączenia aplikacji z kontem w mBanku
+Jeśli korzystasz już z aplikacji mobilnej:
+
+z menu głównego aplikacji wybierz opcję „mobilna autoryzacja”
+kliknij przycisk „Aktywuj”
+aktywację potwierdź PIN-em – tym samym, którym logujesz się do aplikacji
+
+### Na ilu urządzeniach może działać mobilna autoryzacja?
+Mobilna autoryzacja działa na każdym urządzeniu, na którym masz aktywną aplikację mBanku. Na każdym urządzeniu pojawi się powiadomienie autoryzacyjne. Akceptacja na jednym z urządzeń powoduje dezaktywację powiadomienia na kolejnym urządzeniu.
+
+### Czy mobilna autoryzacja jest bezpieczna? Po czym poznam, że komunikat wysyła mi mBank?
+Mobilna autoryzacja opiera się o najnowsze rozwiązania kryptograficzne i technologiczne. Jednym z wielu zabezpieczeń stosowanych przez mechanizm mobilnej autoryzacji jest chociażby:
+
+1. Komunikacja między Twoją aplikacją mobilną a serwisem transakcyjnym zabezpieczona jest szyfrowaniem SSL / TLS 1.2 oraz dodatkowym szyfrowaniem wewnątrz kanału SSL/TLS. To gwarantuje pełną poufność i autentyczność powiadomienia autoryzacyjnego.
+
+2. Wszystkie szczegóły operacji przetwarzane przez aplikację mobilną chronione są przed nieautoryzowanym dostępem nieuprawnionych użytkowników oraz złośliwych programów.
+
+3. Mobilna autoryzacja zapewnia zaawansowane mechanizmy kryptograficzne, które utrudniają między innymi kopiowanie aplikacji na inne urządzenie, czy też inżynierię wsteczną.
+
+### Ile mam czasu na potwierdzenie bądź odrzucenie opracji?
+Powiadomienie autoryzacyjne ważne jest przez 5 minut od momentu jego wysłania w serwisie transakcyjnym. W tym czasie możliwa jest akceptacja bądź odrzucenie realizowanej operacji. Po upływie 5 minut operacja jest automatycznie odrzucana ze statusem „Przekroczony czas”.
+
+### Nie otrzymałem pusha / powiadomienia autoryzacyjnego - jak potwierdzić operację?
+W szczególnych sytuacjach, zależnych np. od wyboru ustawień w aplikacji, producenta telefonu lub działającego na nim oprogramowania może zdarzyć się, że wiadomość push – aktywne powiadomienie nie dotrze na urządzenie. W takim przypadku szczegóły realizowanej operacji można zobaczyć w następujący sposób:
+
+1. zaloguj się do aplikacji mobilnej
+
+2. z menu głównego aplikacji wybierz Mobilną autoryzację
+
+3. otwórz aktywne powiadomienie autoryzacyjne i zaakceptuj operację
+
+### Odłączyłem urządzenie w serwisie transakcyjny / aplikacji i nie działa mi teraz Mobilna autoryzacja?
+Jeśli usunąłeś aplikację mBanku w serwisie transakcyjnym, bądź „Odłączyłeś urządzenie” w ustawieniach aplikacji – po ponownej instalacji i aktywacji aplikacji Mobilna autoryzacja zostanie aktywowana automatycznie.
+
+### Odinstalowałem aplikację i nie dostają haseł SMS. Dlaczego?
+Twoje urządzenie jest cały czas powiązane z kontem w mBanku. Aby je odpiąć, musisz usunąć je w serwisie transakcyjnym (Ustawienia > Dostęp do banku). Możesz zadzwonić też na mLinię, nasz Ekspert pomoże Ci to zrobić. Do tego czasu cały czas mobilna autoryzacja będzie aktywna.
+
+### W czym Mobilna autoryzacja jest lepsza od haseł SMS?
+Mobilna autoryzacja to przede wszystkim: 
+
+bezpieczeństwo - zaawansowane mechanizmy bezpieczeństwa gwarantują silną ochronę aplikacji mobilnej i realizowanej operacji
+wygoda i szybkość – nie musisz już przepisywać skomplikowanych haseł SMS do serwisu transakcyjnego, wystarczy jedno kliknięcie w aplikacji mobilnej i operacja jest już potwierdzona
+czytelność powiadomień autoryzacyjnych – szczegóły operacji prezentowane są w jasnej i przejrzystej formie
+
+### Ile mam czasu na potwierdzenie bądź odrzucenie operacji?
+Powiadomienie autoryzacyjne ważne jest przez 5 minut od momentu jego wysłania w serwisie transakcyjnym. W tym czasie możliwa jest akceptacja bądź odrzucenie realizowanej operacji. Po upływie 5 minut operacja jest automatycznie odrzucana ze statusem „Przekroczony czas”.
+
+### Co się stanie, jeśli odłączę urządzenie od konta?
+Do czasu ponownego podłączenia aplikacji mobilnej do konta operacje będziesz autoryzować hasłami SMS.
+
+### Mobilna autoryzacja nie została aktywowana
+Jeśli z jakiegoś powodu mobilna autoryzacja nie została aktywowana automatycznie, możesz to zrobić samodzielnie. Wystarczy, że z menu głównego aplikacji wybierzesz opcję „Mobilna autoryzacja” i „Aktywuj”. Następnie potwierdź aktywację kodem PIN służącym do logowania do aplikacji.
+
+### W jakich sytuacjach mogę być proszony o zatwierdzenie operacji w aplikacji?
+Mobilną autoryzacją zatwierdzisz dokładnie te same operacje, które do tej pory zatwierdzałeś hasłami SMS lub hasłami jednorazowymi.
+
+### Czy potrzebny jest dostęp do internetu, aby potwierdzić operacje?
+Tak – internet jest wymagany w celu poprawnego działania Mobilnej autoryzacji.
+
+### Jak sprawdzić, czy korzystam  już z Mobilnej autoryzacji?
+To czy korzystasz już z mobilnej autoryzacji. możesz sprawdzić:
+1. W serwisie transakcyjnym w ustawieniach, w sekcji Sposoby autoryzacji.
+
+2. W trakcie realizacji operacji w serwisie transakcyjnym – zamiast hasła SMS wyślemy Ci powiadomienie autoryzacyjne na telefon.
+
+### Czym są powiadomienia autoryzacyjne?
+Powiadomienia autoryzacyjne są odpowiednikami wiadomości SMS bądź pojedynczych haseł jednorazowych (lista TAN). Każde powiadomienie ma swój unikalny numer. Zlecając operację w serwisie transakcyjnym zawsze zwracaj uwagę na numer powiadomienia autoryzacyjnego które właśnie akceptujesz, a także szczególnie wrażliwe dane operacji, jak kwota czy numer rachunku beneficjenta.
+
+### Czym jest aktywne powiadomienie?
+Aktywne powiadomienie to inaczej powiadomienie autoryzacyjne, które możesz w danym momencie zaakceptować bądź odrzucić.
+
+W danym momencie dostępne może być jedno aktywne powiadomienie. Jeśli zrealizujesz kilka operacji pod rząd tylko najnowsza operacja będzie aktywna. Pozostałe operacje automatycznie przejdą w status: „Odrzucona”.
+
+### Co oznacza informacja "Operacja została przyjęta do realizacji?
+Po zatwierdzeniu operacji w aplikacji mobilnej pojawia się  ekran „Operacja została przyjęta do realizacji”. W praktyce oznacza to, że przyjęliśmy do realizacji Twoją dyspozycję. Nie oznacza to jednak faktu, że operacja na pewno zostanie zrealizowana. Finalny status realizacji operacji jest widoczny zawsze w serwisie transakcyjnym, bądź w historii autoryzacji operacji.
+
+### Na jakiej zasadzie działa historia autoryzacji?
+Historia autoryzacji prezentuje 20 ostatnich operacji zainicjowanych w serwisie transakcyjnym wraz z końcowym statusem ich wykonania tj: „Potwierdzona”, „Odrzucona”, „Przekroczony czas”, „Błąd”. Statusy operacji w historii autoryzacji prezentują stan wykonania operacji - czyli np. to czy przelew został zrealizowany, bądź zaplanowany do realizacji. Jeżeli z jakiś względów operacja nie mogła zostać wykonana pojawi się status „Odrzucona”.
+
+### W serwisie transakcyjnym nie widzę funkcji "Potwierdź później". Czy to błąd?
+Po uruchomieniu Mobilnej autoryzacji w serwisie transakcyjnym znika możliwość przenoszenia operacji do sekcji „Do potwierdzenia”.
+
+### Mam tylko jedno urządzenie mimo tego przy autoryzacji widzę komunikat "Powiadomienie autoryzacyjne zostało wysłane na Twoje urządzenia."
+Jeżeli odinstalowałeś aplikację mobilną mBanku bądź aplikacja rozłączyła się sama, w serwisie transakcyjnym mBanku w sekcji Ustawienia > Dostęp do banku- Twoje urządzenie widnieje nadal jako aktywne. W takiej sytuacji konieczne jest „ręczne” odłączenie i usunięcie urządzenia.
+
+### Jak zrezygnować z mobilnej autoryzacji?
+Jeżeli chcesz zrezygnować z Mobilnej autoryzacji, zaloguj się na swoje konto przez internet i wejdź w Ustawienia > Sposoby autoryzacji. Wybierz opcję „Zmień na hasła SMS”.
+
+Możesz też skorzystać z mLinii na klik i połączyć się z konsultantem bezpośrednio z aplikacji mobilnej mBanku, bez konieczności dodatkowej autoryzacji lub skontaktuj się z mLinią pod numerem telefonu +48 42 6 300 800 (opłata za połączenie zgodna z opłatą przewidzianą przez operatora wg aktualnego cennika).
+
+### Czy mogę korzystać bezpiecznie z Mobilnej autoryzacji, gdy korzystam z danych sieci komórkowych? A z innych sieci publicznych, np. w kawiarni?
+Korzystanie z Mobilnej autoryzacji jest bezpieczne dzięki zastosowaniu najnowszych rozwiązań kryptograficznych i technologicznych. Zalecamy jednak korzystanie z danych sieci komórkowych.
+
+### Mam uwagi co do działania Mobilnej autoryzacji - gdzie mogę je zgłosić?
+Jeśli zauważysz błąd, masz uwagi, pomysły na usprawnienie co do działania mobilnej autoryzacji będziemy wdzięczni za wysłanie informacji na adres: kontakt@mbank.pl
+
+Twoja opinia jest dla nas cenna.

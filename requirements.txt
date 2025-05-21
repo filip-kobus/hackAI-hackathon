@@ -6,3 +6,4 @@ uvicorn
 
 #prompt_model
 openai
+requests

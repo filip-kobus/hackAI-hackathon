@@ -16,6 +16,7 @@ class LlamaChat:
             "model": self.MODEL_NAME,
             "messages": messages,
             "stream": False
+            
         })
 
         if response.status_code != 200:

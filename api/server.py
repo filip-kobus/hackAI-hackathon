@@ -27,9 +27,9 @@ class MessageRequest(BaseModel):
 async def send_message(request: MessageRequest):
     try:
         message = request.message
-        session.is_chat_window_present()
         if not message:
             raise HTTPException(status_code=400, detail="Message is required")
+        session.is_chat_window_present()
 
         session.send_message(message)
         response = session.check_for_response()
