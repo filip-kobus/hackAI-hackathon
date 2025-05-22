@@ -2,7 +2,8 @@ import re
 import json
 import os
 
-questions_path = os.path.abspath(r'C:\Users\filip\OneDrive\Dokumenty\HackAI\data\mbank-pytania-v1.md')
+questions_path = os.path.abspath(r'data/mbank-pytania-v1.md')
+output_path = os.path.abspath(r'data/mbank-pytania-v1.json')
 
 def extract_questions_and_answers(filename):
     questions_and_answers = []
@@ -33,7 +34,7 @@ def extract_questions_and_answers(filename):
 
 if __name__ == "__main__":
     questions_and_answers = extract_questions_and_answers(questions_path)
-    with open('questions_answers.json', 'w', encoding='utf-8') as f:
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(questions_and_answers, f, ensure_ascii=False, indent=2)
     for qa in questions_and_answers:
         print(f"Question: {qa['question']}")
