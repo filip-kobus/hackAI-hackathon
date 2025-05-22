@@ -1,5 +1,6 @@
 import os
 import requests
+import re
 
 from faq_parser import parse_file_generator
 from chat_adapter import ChatAdapter
@@ -51,6 +52,20 @@ def main():
     
     def _send_start_signal(system_prompt: str) -> str:
         return _generate_message(system_prompt, "[START]")
+    
+    def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]: 
+        agent_response_formatted = re.sub(r'\n+', '\n', agent_response_formatted)
+        lines = agent_response_formatted.strip().split('\n')
+        key_words = ['PROCES_MYSLOWY:', 'ODPOWIEDZ:']
+        
+        if len(lines) < len(key_words):
+            raise ValueError("Za mało kompentów odpowiedzi agenta!")      
+        for i in range(len(key_words)):
+            words = lines[i].split(' ')
+            if words[0] != key_words[i]:
+                raise ValueError("Niepoprawny komponent w odpowiedzi agenta!")  
+            lines[i] = words[1:]         
+        return lines[0], lines[1]
 
     #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
