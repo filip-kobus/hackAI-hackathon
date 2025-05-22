@@ -14,7 +14,7 @@ MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 
-MAX_MESSAGES_PER_QUESTION = 1
+MAX_MESSAGES_PER_QUESTION = 5
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -49,10 +49,6 @@ def main():
 
     def _send_message_to_chatbot(message: str) -> str:
         return chat_adapter.send_message(message)
-
-    def _choose_faq_question(faq_file) -> str:
-        generator = parse_file_generator(faq_file)
-        return next(generator, None)
     
     def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]:
         agent_response_formatted = re.sub(r'\n+', '\n', agent_response_formatted)
@@ -70,8 +66,7 @@ def main():
 
     #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
-    while(True):
-        chosen_faq_question = _choose_faq_question(faq_file)
+    for chosen_faq_question in parse_file_generator(faq_file):
         chat_history_storage = ChatHistoryStorage(chosen_faq_question)
         system_prompt = _get_system_prompt(chosen_faq_question)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
@@ -89,7 +84,6 @@ def main():
                 break
         chat_history_storage.save_to_file()
         _send_message_to_chatbot("[RESET]")
-        input("Press Enter to continue...")
 
 
 
