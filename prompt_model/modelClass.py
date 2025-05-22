@@ -3,7 +3,7 @@ import requests
 
 from chat_adapter import ChatAdapter
 from ai_agent import ModelChat
-from tools.tools import save_response_to_file
+from tools.tools import ChatHistoryStorage
 
 # === KONFIGURACJA ===
 MODEL_NAME = "gemma3:12b-it-qat"
