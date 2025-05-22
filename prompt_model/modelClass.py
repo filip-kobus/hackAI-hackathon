@@ -24,24 +24,44 @@ def my_tool(data):
 def main():
     chat_adapter = ChatAdapter()
     agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
-    print("=== Starting gemma3:12b-it-qat... ===")
-    # Do zaimplementowania wstrzykiwanie odpowiedniego FAQ i historii chatu!!!
-    faq = "Minimalna kwota kredytu to 10zł"
-    historia_chatu = ""
-    system_prompt = _get_system_prompt(faq, historia_chatu)
+    faq_file ="File path for faq"
+    print(f"=== Starting {MODEL_NAME}... ===")
+    MAX_MESSAGES_COUNT = 10
+    while(True):
+        chat_history_storage = ChatHistoryStorage()
+        chosen_faq_question = _choose_faq_question(faq_file) #Razem z odpowiedziami powinno być pytanie pobierane, żeby chat wiedział o co dopytywać
+        system_prompt = _get_system_prompt(chosen_faq_question, historia_chatu)
+        thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
+        received_message = _send_message_to_chatbot(first_message)
+        chat_history_storage.save_dialog_fragment(model_message=first_message, chatbot_answer=received_message)
+        for i in range(MAX_MESSAGES_COUNT):
+            thought_process, generated_message = _split_message_parts(_generate_message(system_prompt, received_message))
+            received_message = _send_message_to_chatbot(generated_message)
+            chat_history_storage.save_dialog_fragment(model_message=generated_message, chatbot_answer=received_message)
+            if(received_message == "RESET SUCCESSFULL"):
+                break
+        chat_history_storage.save_to_file()
+        _send_message_to_chatbot("[RESET]")
 
-    try:
-        agent_response = agent.send_prompt(system_prompt, "[START]")
-        agent_response_formatted = format_response(agent_response)
-        print("\nAI:\n" + agent_response_formatted)
 
-        mbank_answer = chat_adapter.send_message(agent_response_formatted)
-        print("\nmBank:\n" + str(mbank_answer))
+    
+    # # Do zaimplementowania wstrzykiwanie odpowiedniego FAQ i historii chatu!!!
+    # faq = "Minimalna kwota kredytu to 10zł"
+    # historia_chatu = ""
+    # system_prompt = _get_system_prompt(faq, historia_chatu)
 
-        save_response_to_file(agent_response_formatted, mbank_answer)
+    # try:
+    #     agent_response = agent.send_prompt(system_prompt, "[START]")
+    #     agent_response_formatted = format_response(agent_response)
+    #     print("\nAI:\n" + agent_response_formatted)
 
-    except Exception as e:
-        print(f"Error: {e}")
+    #     mbank_answer = chat_adapter.send_message(agent_response_formatted)
+    #     print("\nmBank:\n" + str(mbank_answer))
+
+    #     save_response_to_file(agent_response_formatted, mbank_answer)
+
+    # except Exception as e:
+    #     print(f"Error: {e}")
 
 
 
@@ -75,20 +95,18 @@ def _get_system_prompt(faq_context: str, chat_history: str) -> str:
     PLAN_DZIAŁANIA (działania jakie powinieneś odpowiednio kolejno podejmować):
     1. Zrozumienie otrzymanej wiadomości i ewentualne zastosowanie odpowiednich zasad z sekcji "ZASADY", jeżeli to konieczne.
     2. Ustalenie, czy otrzymana wiadomość jest zgodna z ustalonymi wytycznymi.
-    3. Wystawienie oceny od 1 do 10 w zależnosci od ustalonej zgodności.
-    4. Napisanie kolejnej wiadomości, jaka zostanie przekazana, jako odpowiedź na otrzymaną wiadomość. Napisana w ten sposób wiadomość powinna być logicznym następstwem przeprowadzonej rozmowy (przez co rozumie się poprzednie wiadomości z sekcji HISTORIA_CHATU)
+    3. Napisanie kolejnej wiadomości, jaka zostanie przekazana, jako odpowiedź na otrzymaną wiadomość. Napisana w ten sposób wiadomość powinna być logicznym następstwem przeprowadzonej rozmowy (przez co rozumie się poprzednie wiadomości z sekcji HISTORIA_CHATU) (BARDZO WAŻNY ASPEKT)
 
     
     FORMAT_ODPOWIEDZI (W jaki sposób powinieneś pisać odpowiedzi):
     - KONIECZNIE. Wypisany proces myślowy dotyczący ustalenej zgodności otrzymanej wiadomości. KONIECZNIE MUSI być to poprzedzone zwrotem "PROCES_MYSLOWY: ".
-    - KONIECZNIE. Wystawiona ocena oparta o ustaloną zgodność otrzymanej wiadomości. KONIECZNIE MUSI być to poprzedzone zwrotem "OCENA: ".
     - KONIECZNIE. Napisana kolejna wiadomość będącą odpowiedzią na otrzymaną wiadomość. KONIECZNIE MUSI być to poprzedzone zwrotem "ODPOWIEDZ".
     """
 
     return system_prompt
 
 # === INTERFEJSY ===
-
+# TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
 
 
 
