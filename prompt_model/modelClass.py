@@ -11,7 +11,6 @@ MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 
-chat_adapter = ChatAdapter()
 MAX_MESSAGES_PER_QUESTION = 10
 
 # === FORMATOWANIE ODPOWIEDZI ===
@@ -27,6 +26,7 @@ def my_tool(data):
 # === FUNKCJA GŁÓWNA ===
 def main():
     agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
+    chat_adapter = ChatAdapter()
     faq_file ="File path for faq"
     # === INTERFEJSY ===
     # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
@@ -38,6 +38,16 @@ def main():
             print(f"Error while generating agent message: {e}")
             agent_response_formatted = "Nie zrozumiałem. Czy mógłbyś powtórzyć?"
         return agent_response_formatted
+    
+    def _send_start_signal(system_prompt: str) -> str:
+        return _generate_message(system_prompt, ['START'])
+
+    def _send_message_to_chatbot(message: str) -> str:
+        return chat_adapter.send_message(message)
+
+    def _choose_faq_question(faq_file) -> str:
+        generator = parse_file_generator(faq_file)
+        return next(generator, None)
     
     def _send_start_signal(system_prompt: str) -> str:
         return _generate_message(system_prompt, "[START]")
@@ -120,19 +130,6 @@ def _get_system_prompt(faq_context: str) -> str:
     """
 
     return system_prompt
-
-# === INTERFEJSY ===
-# TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
-
-def _send_start_signal(system_prompt: str) -> str:
-    return _generate_message(system_prompt, ['START'])
-
-def _send_message_to_chatbot(message: str) -> str:
-    return chat_adapter.send_message(message)
-
-def _choose_faq_question(faq_file) -> str:
-    generator = parse_file_generator(faq_file)
-    return next(generator, None)
 
 
 
