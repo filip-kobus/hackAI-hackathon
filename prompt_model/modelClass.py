@@ -14,7 +14,7 @@ MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 
-MAX_MESSAGES_PER_QUESTION = 1
+MAX_MESSAGES_PER_QUESTION = 5
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -34,7 +34,6 @@ def main():
     # === INTERFEJSY ===
     # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
     def _generate_message(system_prompt: str, input_message: str) -> str:
-        print(input_message)
         try:
             if agent.system_prompt is None:    
                 agent.set_system_prompt(system_prompt)
@@ -76,15 +75,17 @@ def main():
         chosen_faq_question = _choose_faq_question(faq_file)
         system_prompt = _get_system_prompt(chosen_faq_question)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
+        print("\nAI:\n" + first_message)
         received_message = _send_message_to_chatbot(first_message)
+        print("\nmBank:\n" + str(received_message))
         chat_history_storage.save_dialog_fragment(model_message=first_message, chatbot_answer=received_message)
         for i in range(MAX_MESSAGES_PER_QUESTION):
-            thought_process, generated_message = _split_message_parts(_generate_message(system_prompt, received_message))
+            thought_process, generated_message = _split_message_parts(_generate_message(system_prompt, received_message['response']))
             print("\nAI:\n" + generated_message)
             received_message = _send_message_to_chatbot(generated_message)
             print("\nmBank:\n" + str(received_message))
             chat_history_storage.save_dialog_fragment(model_message=generated_message, chatbot_answer=received_message)
-            if(received_message == "RESET SUCCESSFULL"):
+            if(received_message['response'] == "RESET SUCCESSFULL"):
                 break
         chat_history_storage.save_to_file()
         _send_message_to_chatbot("[RESET]")

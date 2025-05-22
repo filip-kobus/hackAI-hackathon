@@ -16,12 +16,8 @@ class ModelChat:
         if self.system_prompt is None:
             raise ValueError("System prompt is not set. Please set it before sending a message.")
 
-        if user_input != "[START]":
-            self.messages.append({"role": "user", "content": user_input['response']})
-        else:
-            self.messages.append({"role": "user", "content": user_input})
+        self.messages.append({"role": "user", "content": user_input})
             
-
         response = requests.post(self.OLLAMA_API_URL, json={
             "model": self.MODEL_NAME,
             "messages": self.messages,
