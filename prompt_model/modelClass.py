@@ -14,7 +14,7 @@ MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 
-MAX_MESSAGES_PER_QUESTION = 1
+MAX_MESSAGES_PER_QUESTION = 10
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -89,7 +89,7 @@ def main():
                 break
         chat_history_storage.save_to_file()
         _send_message_to_chatbot("[RESET]")
-        input("Press Enter to continue...")
+        print("Proceeding to next question...")
 
 
 

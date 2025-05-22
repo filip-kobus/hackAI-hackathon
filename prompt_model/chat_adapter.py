@@ -28,31 +28,33 @@ class ChatAdapter(BaseModel):
     def _transform_response(self ,raw_responce :str) -> Dict[str, Any]:
         try:
             data = json.loads(raw_responce)
-            lines = data.get("response").split('\n')
+            split = data.get("response").split("===========")
+            responce_part = split[0]
+            tags_part = split[1]
+            tags_part_lines = tags_part.split("\n")
             trace_index = None
-            for i, line in enumerate(lines):
-                if line.startswith("Trace ID:"):
+            for i, tags_part_line in enumerate(tags_part_lines):
+                if tags_part_line.startswith("Trace ID:"):
                     trace_index = i
                     break
             if trace_index is not None:
-                lines = lines[:trace_index+1]
-                additional = lines[trace_index+1:]
+                tags_part_lines = tags_part_lines[:trace_index+1]
+                additional = tags_part_lines[trace_index+1:]
             else:
                 additional = []
-            lines = [line for line in lines if line != "==========="]
         except json.JSONDecodeError:
             print("Błąd parsowania JSON")
 
         result_responce = {}
 
-        if not lines:
+        if not tags_part_lines:
             result_responce["additional"] = "".join(additional)
             return result_responce  # pusta lista
 
-        result_responce["response"] = lines[0]
-        for line in lines[1:]:
-            if ": " in line:
-                key, value = line.split(": ", 1)
+        result_responce["response"] = responce_part
+        for tags_part_line in tags_part_lines[1:]:
+            if ": " in tags_part_line:
+                key, value = tags_part_line.split(": ", 1)
                 key = key.strip().replace(" ", "-")
                 value = value.strip()
                 result_responce[key.lower()] = value
