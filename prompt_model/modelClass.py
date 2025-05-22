@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import re
 
 from faq_parser import parse_file_generator
 from chat_adapter import ChatAdapter
@@ -29,7 +30,7 @@ def my_tool(data):
 def main():
     agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
     chat_adapter = ChatAdapter()
-    faq_file ="File path for faq"
+    faq_file = os.path.abspath(r'data/mbank-pytania.md')
     # === INTERFEJSY ===
     # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
     def _generate_message(system_prompt: str, input_message: str) -> str:
@@ -56,7 +57,8 @@ def main():
     def _send_start_signal(system_prompt: str) -> str:
         return _generate_message(system_prompt, "[START]")
     
-    def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]: 
+    def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]:
+        print(agent_response_formatted)
         agent_response_formatted = re.sub(r'\n+', '\n', agent_response_formatted)
         lines = agent_response_formatted.strip().split('\n')
         key_words = ['PROCES_MYSLOWY:', 'ODPOWIEDZ:']
@@ -87,11 +89,10 @@ def main():
                 break
         chat_history_storage.save_to_file()
         _send_message_to_chatbot("[RESET]")
+        input("Press Enter to continue...")
 
 
 
-
-    
     # # Do zaimplementowania wstrzykiwanie odpowiedniego FAQ i historii chatu!!!
     # faq = "Minimalna kwota kredytu to 10zł"
     # historia_chatu = ""
