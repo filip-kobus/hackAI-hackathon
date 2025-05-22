@@ -76,7 +76,6 @@ def main():
         chat_history_storage = ChatHistoryStorage(chosen_faq_question)
         storage_index = chat_history_storage.get_number_of_files()
         if storage_index >= i:
-            print(f"=== {i} - {chosen_faq_question} already exists. Skipping... ===")
             continue
         system_prompt = _get_system_prompt(chosen_faq_question)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
