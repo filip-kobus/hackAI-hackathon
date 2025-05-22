@@ -70,9 +70,14 @@ def main():
 
     #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
-    while(True):
-        chosen_faq_question = _choose_faq_question(faq_file)
+    i = 0
+    for chosen_faq_question in parse_file_generator(faq_file):
+        i += 1
         chat_history_storage = ChatHistoryStorage(chosen_faq_question)
+        storage_index = chat_history_storage.get_number_of_files()
+        if storage_index >= i:
+            print(f"=== {i} - {chosen_faq_question} already exists. Skipping... ===")
+            continue
         system_prompt = _get_system_prompt(chosen_faq_question)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
         print("\nAI:\n" + first_message)

@@ -22,17 +22,20 @@ class ChatHistoryStorage:
             "chatbot_answer": chatbot_answer
         })
 
-    def save_to_file(self):
-        os.makedirs(self.OUTPUT_DIRECTORY, exist_ok=True)
-
+    def get_number_of_files(self):
         existing_numbers = [
             int(fname[12:].rstrip(".json")) for fname in os.listdir(self.OUTPUT_DIRECTORY)
             if fname.startswith(self.FILE_NAME) and fname.endswith('.json')
         ]
         if not existing_numbers:
-            max_num = 0
+            return 0
         else:
-            max_num = max(existing_numbers)
+            return max(existing_numbers)
+
+    def save_to_file(self):
+        os.makedirs(self.OUTPUT_DIRECTORY, exist_ok=True)
+
+        max_num = self.get_number_of_files()
 
         next_num = max_num + 1
         file_name = f"{self.FILE_NAME}{next_num}.json"
