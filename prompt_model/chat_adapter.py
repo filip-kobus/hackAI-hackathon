@@ -30,7 +30,10 @@ class ChatAdapter(BaseModel):
             data = json.loads(raw_responce)
             split = data.get("response").split("===========")
             responce_part = split[0]
-            tags_part = split[1]
+            if len(split) > 1:
+                tags_part = split[1]
+            else:
+                tags_part = ""
             tags_part_lines = tags_part.split("\n")
             trace_index = None
             for i, tags_part_line in enumerate(tags_part_lines):

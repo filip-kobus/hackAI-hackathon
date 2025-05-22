@@ -14,7 +14,7 @@ MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 
-MAX_MESSAGES_PER_QUESTION = 10
+MAX_MESSAGES_PER_QUESTION = 2
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
