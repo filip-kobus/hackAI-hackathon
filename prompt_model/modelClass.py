@@ -1,6 +1,7 @@
 import os
 import requests
 
+from faq_parser import parse_file_generator
 from chat_adapter import ChatAdapter
 from ai_agent import ModelChat
 from tools.tools import save_response_to_file
@@ -9,6 +10,8 @@ from tools.tools import save_response_to_file
 MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
+
+chat_adapter = ChatAdapter()
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -22,7 +25,6 @@ def my_tool(data):
 
 # === FUNKCJA GŁÓWNA ===
 def main():
-    chat_adapter = ChatAdapter()
     agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
     faq_file ="File path for faq"
     print(f"=== Starting {MODEL_NAME}... ===")
@@ -30,7 +32,7 @@ def main():
     while(True):
         chat_history_storage = ChatHistoryStorage()
         chosen_faq_question = _choose_faq_question(faq_file) #Razem z odpowiedziami powinno być pytanie pobierane, żeby chat wiedział o co dopytywać
-        system_prompt = _get_system_prompt(chosen_faq_question, historia_chatu)
+        system_prompt = _get_system_prompt(chosen_faq_question)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
         received_message = _send_message_to_chatbot(first_message)
         chat_history_storage.save_dialog_fragment(model_message=first_message, chatbot_answer=received_message)
@@ -65,15 +67,12 @@ def main():
 
 
 
-def _get_system_prompt(faq_context: str, chat_history: str) -> str:
+def _get_system_prompt(faq_context: str) -> str:
 
 
     system_prompt = f"""
     KONTEKST_FAQ:
     {faq_context}
-
-    HISTORIA_CHATU:
-    {chat_history}
 
     CEL:
     Jesteś systemem do sprawdzania i oceniania poprawności otrzymywanych informacji, pozyskanych od drugiego ChatBota, jesteś stworzony do prowadzenia logicznego dialogu w celu kontynuowania rozmowy.
@@ -107,6 +106,16 @@ def _get_system_prompt(faq_context: str, chat_history: str) -> str:
 
 # === INTERFEJSY ===
 # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
+
+def _send_start_signal(system_prompt: str) -> str:
+    return _generate_message(system_prompt, ['START'])
+
+def _send_message_to_chatbot(message: str) -> str:
+    return chat_adapter.send_message(message)
+
+def _choose_faq_question(faq_file) -> str:
+    generator = parse_file_generator(faq_file)
+    return next(generator, None)
 
 
 
