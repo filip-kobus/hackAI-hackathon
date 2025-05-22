@@ -34,6 +34,7 @@ def main():
     # === INTERFEJSY ===
     # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
     def _generate_message(system_prompt: str, input_message: str) -> str:
+        print(input_message)
         try:
             if agent.system_prompt is None:    
                 agent.set_system_prompt(system_prompt)
@@ -45,7 +46,7 @@ def main():
         return agent_response_formatted
     
     def _send_start_signal(system_prompt: str) -> str:
-        return _generate_message(system_prompt, ['START'])
+        return _generate_message(system_prompt, "[START]")
 
     def _send_message_to_chatbot(message: str) -> str:
         return chat_adapter.send_message(message)
@@ -54,11 +55,7 @@ def main():
         generator = parse_file_generator(faq_file)
         return next(generator, None)
     
-    def _send_start_signal(system_prompt: str) -> str:
-        return _generate_message(system_prompt, "[START]")
-    
     def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]:
-        print(agent_response_formatted)
         agent_response_formatted = re.sub(r'\n+', '\n', agent_response_formatted)
         lines = agent_response_formatted.strip().split('\n')
         key_words = ['PROCES_MYSLOWY:', 'ODPOWIEDZ:']
