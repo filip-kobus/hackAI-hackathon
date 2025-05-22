@@ -34,7 +34,9 @@ def main():
     # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
     def _generate_message(system_prompt: str, input_message: str) -> str:
         try:
-            agent_response = agent.send_prompt(system_prompt, input_message)
+            if agent.system_prompt is None:    
+                agent.set_system_prompt(system_prompt)
+            agent_response = agent.send_prompt(input_message)
             agent_response_formatted = format_response(agent_response)
         except Exception as e:
             print(f"Error while generating agent message: {e}")
