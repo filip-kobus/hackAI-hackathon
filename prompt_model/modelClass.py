@@ -24,12 +24,12 @@ def my_tool(data):
 def main():
     chat_adapter = ChatAdapter()
     agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
-    
+    faq_file ="File path for faq"
     print(f"=== Starting {MODEL_NAME}... ===")
     MAX_MESSAGES_COUNT = 10
     while(True):
         chat_history_storage = ChatHistoryStorage()
-        chosen_faq_question = _choose_faq_question() #Razem z odpowiedziami powinno być pytanie pobierane, żeby chat wiedział o co dopytywać
+        chosen_faq_question = _choose_faq_question(faq_file) #Razem z odpowiedziami powinno być pytanie pobierane, żeby chat wiedział o co dopytywać
         system_prompt = _get_system_prompt(chosen_faq_question, historia_chatu)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
         received_message = _send_message_to_chatbot(first_message)
@@ -39,7 +39,7 @@ def main():
             received_message = _send_message_to_chatbot(generated_message)
             chat_history_storage.save_dialog_fragment(model_message=generated_message, chatbot_answer=received_message)
             if(received_message == "RESET SUCCESSFULL"):
-                yield
+                break
         chat_history_storage.save_to_file()
         _send_message_to_chatbot("[RESET]")
 
