@@ -10,9 +10,9 @@ class ChatHistoryStorage:
     def __init__(self, question):
         questiones = question.split("\n")
         self.history = {
-                "dziedzina":questiones[0],
-                "pytanie": questiones[1],
-                "odpowiedz": questiones[2],
+                "dziedzina":questiones[0].lstrip("[DZIEDZINA]").strip(),
+                "pytanie": questiones[1].lstrip("[PYTANIE]").strip(),
+                "odpowiedz": questiones[2].lstrip("[ODPOWIEDŹ]").strip(),
                 "chat": []
         }
 
