@@ -6,8 +6,6 @@ import subprocess
 class ChatAdapter(BaseModel):
     send_message_endpoint: str = "http://127.0.0.1:8000/send_message"
 
-
-
     def send_message(self, message: str) -> Dict[str, Any]:
         payload = json.dumps({"message": message})
 

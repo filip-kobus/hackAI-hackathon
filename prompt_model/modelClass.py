@@ -14,7 +14,7 @@ MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 
-MAX_MESSAGES_PER_QUESTION = 10
+MAX_MESSAGES_PER_QUESTION = 1
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -70,7 +70,7 @@ def main():
             if words[0] != key_words[i]:
                 raise ValueError("Niepoprawny komponent w odpowiedzi agenta!")  
             lines[i] = words[1:]         
-        return lines[0], lines[1]
+        return ' '.join(lines[0]), ' '.join(lines[1]).strip()
 
     #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
@@ -83,7 +83,9 @@ def main():
         chat_history_storage.save_dialog_fragment(model_message=first_message, chatbot_answer=received_message)
         for i in range(MAX_MESSAGES_PER_QUESTION):
             thought_process, generated_message = _split_message_parts(_generate_message(system_prompt, received_message))
+            print("\nAI:\n" + generated_message)
             received_message = _send_message_to_chatbot(generated_message)
+            print("\nmBank:\n" + str(received_message))
             chat_history_storage.save_dialog_fragment(model_message=generated_message, chatbot_answer=received_message)
             if(received_message == "RESET SUCCESSFULL"):
                 break
