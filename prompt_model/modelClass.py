@@ -14,7 +14,7 @@ MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 
-MAX_MESSAGES_PER_QUESTION = 5
+MAX_MESSAGES_PER_QUESTION = 2
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -66,8 +66,14 @@ def main():
 
     #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
+    i = 0
     for chosen_faq_question in parse_file_generator(faq_file):
+        i += 1
         chat_history_storage = ChatHistoryStorage(chosen_faq_question)
+        storage_index = chat_history_storage.get_number_of_files()
+        if storage_index >= i:
+            print(f"=== {i} - {chosen_faq_question} already exists. Skipping... ===")
+            continue
         system_prompt = _get_system_prompt(chosen_faq_question)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
         print("\nAI:\n" + first_message)
