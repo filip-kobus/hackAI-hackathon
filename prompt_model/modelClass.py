@@ -1,10 +1,12 @@
 import os
 import requests
+import json
 
 from faq_parser import parse_file_generator
 from chat_adapter import ChatAdapter
 from ai_agent import ModelChat
 from tools.tools import save_response_to_file
+from historyStorage import ChatHistoryStorage
 
 # === KONFIGURACJA ===
 MODEL_NAME = "gemma3:12b-it-qat"
@@ -56,7 +58,7 @@ def main():
     print(f"=== Starting {MODEL_NAME}... ===")
     while(True):
         chat_history_storage = ChatHistoryStorage()
-        chosen_faq_question = _choose_faq_question(faq_file) #Razem z odpowiedziami powinno być pytanie pobierane, żeby chat wiedział o co dopytywać
+        chosen_faq_question = _choose_faq_question(faq_file)
         system_prompt = _get_system_prompt(chosen_faq_question)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
         received_message = _send_message_to_chatbot(first_message)
