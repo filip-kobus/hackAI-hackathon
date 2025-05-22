@@ -71,8 +71,8 @@ def main():
     #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
     while(True):
-        chat_history_storage = ChatHistoryStorage()
         chosen_faq_question = _choose_faq_question(faq_file)
+        chat_history_storage = ChatHistoryStorage(chosen_faq_question)
         system_prompt = _get_system_prompt(chosen_faq_question)
         thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
         print("\nAI:\n" + first_message)

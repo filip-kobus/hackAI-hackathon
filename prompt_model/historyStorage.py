@@ -6,11 +6,18 @@ class ChatHistoryStorage:
     OUTPUT_DIRECTORY = os.path.abspath(r'output')
     FILE_NAME = 'chat_history'
 
-    def __init__(self):
-        self.chat_history = []
 
-    def save_dialog_fragment(self, model_message: str, chatbot_answer: dict[str, str | None]):
-        self.chat_history.append({
+    def __init__(self, question):
+        questiones = question.split("\n")
+        self.history = {
+                "dziedzina":questiones[0],
+                "pytanie": questiones[1],
+                "odpowiedz": questiones[2],
+                "chat": []
+        }
+
+    def save_dialog_fragment(self, model_message: str, chatbot_answer: dict[str, str | None], question: str = None):
+        self.history['chat'].append({
             "model_message": {"response": model_message},
             "chatbot_answer": chatbot_answer
         })
@@ -33,7 +40,7 @@ class ChatHistoryStorage:
 
         try:
             with open(file_path, "w", encoding="utf-8") as file:
-                json.dump(self.chat_history, file, ensure_ascii=False, indent=4)
+                json.dump(self.history, file, ensure_ascii=False, indent=4)
         except Exception as e:
             print(f"Error saving chat history to file: {e}")
             traceback.print_exc()
