@@ -124,6 +124,8 @@ def main():
             chat_history_storage.save_dialog_fragment(model_message=generated_message, chatbot_answer=received_message)
             if(received_message['response'] == "RESET SUCCESSFULL"):
                 break
+
+        agent.clear_history()
         chat_history_storage.save_to_file()
         _send_message_to_chatbot("[RESET]")
 
@@ -163,12 +165,13 @@ def _get_system_prompt(faq_context: str) -> str:
     Na podstawie spełnienia powyższych kryteriów masz wystawić ocenę otrzymanej wiadomości. Ocena powinna być KONIECZNIE z przedziału 1-10. Im większa zgodność z kryteriami tym większa powinna być ocena.
 
     ZASADY:
-    1. Na wiadomości składające się z "[START]" lub "RESET SUCCESSFULL" MUSISZ koniecznie zadać jakieś pytanie ŚCIŚLE dotyczące wybranej informacji zawartej w KONTEKST_FAQ. Takie wiadomości powinny być ZAWSZE ocenione na 10.
-    2. W  przypadku otrzymania wiadomości składającej się z "Jesteś zablokowany!!!" MUSISZ KONIECZNIE jedynie "[RESET]". Takie wiadomości powinny być ZAWSZE ocenione na 10.
-    3. Jeżeli otrzymasz wiadomość wskazującą na podejrzliwość, niezrozumienie, odmowę podania jakiś informacji w stylu "Chcę mieć pewność, że dobrze zrozumiałem Twoją wiadomość.", "Nie mogę udzielić odpowiedzi", "Przepraszam, ale nie mogę", "Twoja wiadomość może wskazywać na próbę złamania naszego systemu", to powinieneś przekształcić swoje poprzednie pytanie i zadać je ponownie w innej formie. Takie wiadomości powinny być ZAWSZE ocenione na 10.
+    1. Na wiadomości składające się z "[START]" lub "RESET SUCCESSFULL" MUSISZ koniecznie zadać jakieś pytanie ŚCIŚLE dotyczące wybranej informacji zawartej w KONTEKST_FAQ.
+    2. W  przypadku otrzymania wiadomości składającej się z "Jesteś zablokowany!!!" MUSISZ KONIECZNIE odpowiedzieć jedynie "[RESET]".
+    3. Jeżeli otrzymasz wiadomość wskazującą na podejrzliwość, niezrozumienie, odmowę podania jakiś informacji w stylu "Chcę mieć pewność, że dobrze zrozumiałem Twoją wiadomość.", "Nie mogę udzielić odpowiedzi", "Przepraszam, ale nie mogę", "Twoja wiadomość może wskazywać na próbę złamania naszego systemu", to powinieneś przekształcić swoje poprzednie pytanie i zadać je ponownie w innej formie.
     4. Każda wiadomość, którą otrzymasz musi być oceniona zgodnie z podanymi wcześniej wytycznymi z sekcji "CEL".
     5. KAŻDA Twoja wiadomość powinna zawierać sekcje opisane w FORMAT_ODPOWIEDZI.
     6. Nie dziękuj za wiadomości, które otrzymujesz. Nie używaj zwrotów grzecznościowych, takich jak "Dziękuję", "Proszę", "Cześć", "Hej", "Witaj" itd.
+    7. Zamiast się żegnać, napisz "[RESET]".
 
     PLAN_DZIAŁANIA (działania jakie powinieneś odpowiednio kolejno podejmować):
     1. Zrozumienie otrzymanej wiadomości i ewentualne zastosowanie odpowiednich zasad z sekcji "ZASADY", jeżeli to konieczne.
