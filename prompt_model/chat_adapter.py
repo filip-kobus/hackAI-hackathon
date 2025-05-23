@@ -29,28 +29,30 @@ class ChatAdapter(BaseModel):
         try:
             data = json.loads(raw_responce)
             split = data.get("response").split("===========")
-            responce_part = split[0]
-            if len(split) > 1:
-                tags_part = split[1]
-            else:
-                tags_part = ""
-            tags_part_lines = tags_part.split("\n")
-            trace_index = None
-            for i, tags_part_line in enumerate(tags_part_lines):
-                if tags_part_line.startswith("Trace ID:"):
-                    trace_index = i
-                    break
-            if trace_index is not None:
-                tags_part_lines = tags_part_lines[:trace_index+1]
-                additional = tags_part_lines[trace_index+1:]
-            else:
-                additional = []
         except json.JSONDecodeError:
             print("Błąd parsowania JSON")
+            split = raw_responce.split("===========")
+        responce_part = split[0]
+        if len(split) > 1:
+            tags_part = split[1]
+        else:
+            tags_part = ""
+        tags_part_lines = tags_part.split("\n")
+        trace_index = None
+        for i, tags_part_line in enumerate(tags_part_lines):
+            if tags_part_line.startswith("Trace ID:"):
+                trace_index = i
+                break
+        if trace_index is not None:
+            tags_part_lines = tags_part_lines[:trace_index+1]
+            additional = tags_part_lines[trace_index+1:]
+        else:
+            additional = []
+
 
         result_responce = {}
 
-        if not tags_part_lines:
+        if tags_part_lines is None:
             result_responce["additional"] = "".join(additional)
             return result_responce  # pusta lista
 
@@ -65,7 +67,6 @@ class ChatAdapter(BaseModel):
             result_responce["intents"] = None
         result_responce["additional"] = "".join(additional)
         return result_responce
-
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ DEFAULT_MESSAGE = "Przepraszam, nie zrozumiałem. Czy mógłbyś powtórzyć?"
 
 MAX_MESSAGES_PER_QUESTION = 3
 
-START_AT = 300
+START_AT = 356
 FINISH_AT = 400
 
 # === FORMATOWANIE ODPOWIEDZI ===
