@@ -44,7 +44,7 @@ class SeleniumWorker:
     def __init__(self):
         chromedriver_autoinstaller.install()
         chrome_options = Options()
-        chrome_options.add_argument('--headless')
+        # chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--window-size=1920,1080')
         self.driver = webdriver.Chrome(options=chrome_options)

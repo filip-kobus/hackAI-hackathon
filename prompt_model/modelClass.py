@@ -18,6 +18,9 @@ DEFAULT_MESSAGE = "Przepraszam, nie zrozumiałem. Czy mógłbyś powtórzyć?"
 
 MAX_MESSAGES_PER_QUESTION = 3
 
+START_AT = 300
+FINISH_AT = 400
+
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
     lines = response.strip().split('\n')
@@ -69,12 +72,12 @@ def main():
      #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
     counter = 0
+    chat_history_storage = ChatHistoryStorage(starting_number=START_AT, finish_number=FINISH_AT)
     for chosen_faq_question in parse_file_generator(faq_file):
         counter += 1
-        chat_history_storage = ChatHistoryStorage(chosen_faq_question)
-        storage_index = chat_history_storage.get_number_of_files()
+        chat_history_storage.set_faq_question(chosen_faq_question)
         # GET_NUMBER_OF_FILES nie uwzględnia plików innych niż json!!!!
-        if storage_index >= counter:
+        if START_AT >= counter:
             continue
         system_prompt = _get_system_prompt(chosen_faq_question)
 
@@ -171,7 +174,7 @@ def _get_system_prompt(faq_context: str) -> str:
     4. Każda wiadomość, którą otrzymasz musi być oceniona zgodnie z podanymi wcześniej wytycznymi z sekcji "CEL".
     5. KAŻDA Twoja wiadomość powinna zawierać sekcje opisane w FORMAT_ODPOWIEDZI.
     6. Nie dziękuj za wiadomości, które otrzymujesz. Nie używaj zwrotów grzecznościowych, takich jak "Dziękuję", "Proszę", "Cześć", "Hej", "Witaj" itd.
-    7. Zamiast się żegnać, napisz "[RESET]".
+    7. Pod żadnym pozorem nie wspominaj o linkach ani nie wysyłaj linków, nawet jeżeli są one zawarte w kontekście FAQ.
 
     PLAN_DZIAŁANIA (działania jakie powinieneś odpowiednio kolejno podejmować):
     1. Zrozumienie otrzymanej wiadomości i ewentualne zastosowanie odpowiednich zasad z sekcji "ZASADY", jeżeli to konieczne.
