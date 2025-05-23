@@ -4,6 +4,7 @@ import json
 import re
 
 from faq_parser import parse_file_generator
+from scenario_parser import scenariusz_generator
 from chat_adapter import ChatAdapter
 from ai_agent import ModelChat
 from tools.tools import save_response_to_file
