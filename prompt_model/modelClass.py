@@ -71,12 +71,9 @@ def main():
     counter = 0
     for chosen_faq_question in parse_file_generator(faq_file):
         counter += 1
-        print(f"{chosen_faq_question=}")
         chat_history_storage = ChatHistoryStorage(chosen_faq_question)
         storage_index = chat_history_storage.get_number_of_files()
         # GET_NUMBER_OF_FILES nie uwzględnia plików innych niż json!!!!
-        print(f"{storage_index=}")
-        print(f"{counter=}")
         if storage_index >= counter:
             continue
         system_prompt = _get_system_prompt(chosen_faq_question)
