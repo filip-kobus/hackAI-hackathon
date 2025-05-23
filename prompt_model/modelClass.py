@@ -16,7 +16,7 @@ SAVE_FILE_PATH = ""
 MAX_SPLIT_RETRIES = 5
 DEFAULT_MESSAGE = "Przepraszam, nie zrozumiałem. Czy mógłbyś powtórzyć?"
 
-MAX_MESSAGES_PER_QUESTION = 5
+MAX_MESSAGES_PER_QUESTION = 3
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
