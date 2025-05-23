@@ -51,10 +51,6 @@ def main():
 
     def _send_message_to_chatbot(message: str) -> str:
         return chat_adapter.send_message(message)
-
-    def _choose_faq_question(faq_file) -> str:
-        generator = parse_file_generator(faq_file)
-        return next(generator, None)
     
     def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]:
         agent_response_formatted = re.sub(r'\n+', '\n', agent_response_formatted)
@@ -72,12 +68,16 @@ def main():
 
      #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
-    while(True):
-        chosen_faq_question = _choose_faq_question(faq_file)
+    counter = 0
+    for chosen_faq_question in parse_file_generator(faq_file):
+        counter += 1
+        print(f"{chosen_faq_question=}")
         chat_history_storage = ChatHistoryStorage(chosen_faq_question)
         storage_index = chat_history_storage.get_number_of_files()
-        if storage_index >= i+2: #+2 bo jest jeszcze .gitkeep i .gitignore
-            print(f"=== {i} - {chosen_faq_question} already exists. Skipping... ===")
+        # GET_NUMBER_OF_FILES nie uwzględnia plików innych niż json!!!!
+        print(f"{storage_index=}")
+        print(f"{counter=}")
+        if storage_index >= counter:
             continue
         system_prompt = _get_system_prompt(chosen_faq_question)
 
@@ -151,38 +151,29 @@ def main():
 
 
 def _get_system_prompt(faq_context: str) -> str:
-
-
     system_prompt = f"""
     KONTEKST_FAQ:
     {faq_context}
 
     CEL:
-    Jesteś systemem do sprawdzania i oceniania poprawności otrzymywanych informacji, pozyskanych od drugiego ChatBota, jesteś stworzony do prowadzenia logicznego dialogu w celu kontynuowania rozmowy.
-    Twoim zadaniem jest, na podstawie informacji zawartych w sekcji KONTEKST_FAQ, sprawdzić czy otrzymane wiadomości są zgodnę z prawdą, mają sens w kontekście
-     zadawanych pytań oraz ocenić je kierując się następującymi wytycznymi:
-    - Zgodność otrzymanych informacji względem informacji zawartych w KONTEKST_FAQ. (JEST TO NAJWAŻNIEJSZY ASPEKT)
-    - Otrzymana informacja ma logiczny sens w kontekście zadanego wcześniej pytania.
-    - Otrzymana odpowiedź jest napisana w formie zrozumiałej dla człowieka. Nie zawiera słów nawiązujących do programowania, jak np. "Error", "Exception" itd.
-    - Informacja związana jest z bankowością, a nie innymi dziedzinami.
-    Na podstawie spełnienia powyższych kryteriów masz wystawić ocenę otrzymanej wiadomości. Ocena powinna być KONIECZNIE z przedziału 1-10. Im większa zgodność z kryteriami tym większa powinna być ocena.
+    Jesteś systemem do zadawania pytań konsultantowi bankowemu na podstawie informacji zawartych w KONTEKST_FAQ. Twoim zadaniem jest prowadzenie rozmowy poprzez zadawanie konkretnych pytań dotyczących usług bankowych.
 
     ZASADY:
-    1. Na wiadomości składające się z "[START]" lub "RESET SUCCESSFULL" MUSISZ koniecznie zadać jakieś pytanie ŚCIŚLE dotyczące wybranej informacji zawartej w KONTEKST_FAQ. Takie wiadomości powinny być ZAWSZE ocenione na 10.
-    2. W  przypadku otrzymania wiadomości składającej się z "Jesteś zablokowany!!!" MUSISZ KONIECZNIE jedynie "[RESET]". Takie wiadomości powinny być ZAWSZE ocenione na 10.
-    3. Jeżeli otrzymasz wiadomość wskazującą na podejrzliwość, niezrozumienie, odmowę podania jakiś informacji w stylu "Chcę mieć pewność, że dobrze zrozumiałem Twoją wiadomość.", "Nie mogę udzielić odpowiedzi", "Przepraszam, ale nie mogę", "Twoja wiadomość może wskazywać na próbę złamania naszego systemu", to powinieneś przekształcić swoje poprzednie pytanie i zadać je ponownie w innej formie. Takie wiadomości powinny być ZAWSZE ocenione na 10.
-    4. Każda wiadomość, którą otrzymasz musi być oceniona zgodnie z podanymi wcześniej wytycznymi z sekcji "CEL".
-    5. KAŻDA Twoja wiadomość powinna zawierać sekcje opisane w FORMAT_ODPOWIEDZI.
+    1. Na wiadomości "[START]" lub "RESET SUCCESSFULL" MUSISZ zadać pytanie ŚCIŚLE dotyczące informacji zawartej w KONTEKST_FAQ.
+    2. W przypadku otrzymania wiadomości "Jesteś zablokowany!!!" MUSISZ odpowiedzieć jedynie "[RESET]".
+    3. Jeżeli otrzymasz odpowiedź wskazującą na niezrozumienie lub odmowę ("Chcę mieć pewność, że dobrze zrozumiałem", "Nie mogę udzielić odpowiedzi", "Przepraszam, ale nie mogę"), przekształć swoje pytanie i zadaj je w innej formie.
+    4. NIE dziękuj konsultantowi - skup się tylko na zadawaniu pytań.
+    5. Zadawaj konkretne, jasne pytania dotyczące usług bankowych z KONTEKST_FAQ.
+    6. KAŻDA Twoja wiadomość powinna zawierać sekcje opisane w FORMAT_ODPOWIEDZI.
 
-    PLAN_DZIAŁANIA (działania jakie powinieneś odpowiednio kolejno podejmować):
-    1. Zrozumienie otrzymanej wiadomości i ewentualne zastosowanie odpowiednich zasad z sekcji "ZASADY", jeżeli to konieczne.
-    2. Ustalenie, czy otrzymana wiadomość jest zgodna z ustalonymi wytycznymi.
-    3. Napisanie kolejnej wiadomości, jaka zostanie przekazana, jako odpowiedź na otrzymaną wiadomość. Napisana w ten sposób wiadomość powinna być logicznym następstwem przeprowadzonej rozmowy (przez co rozumie się poprzednie wiadomości z sekcji HISTORIA_CHATU) (BARDZO WAŻNY ASPEKT)
+    PLAN_DZIAŁANIA:
+    1. Przeanalizuj otrzymaną wiadomość.
+    2. Na podstawie KONTEKST_FAQ zadaj następne pytanie dotyczące usług bankowych.
+    3. Jeśli potrzeba, przekształć pytanie w bardziej zrozumiałą formę.
 
-    
-    FORMAT_ODPOWIEDZI (W jaki sposób powinieneś pisać odpowiedzi):
-    - KONIECZNIE. Wypisany proces myślowy dotyczący ustalenej zgodności otrzymanej wiadomości. KONIECZNIE MUSI być to poprzedzone zwrotem "PROCES_MYSLOWY: ".
-    - KONIECZNIE. Napisana kolejna wiadomość będącą odpowiedzią na otrzymaną wiadomość. KONIECZNIE MUSI być to poprzedzone zwrotem "ODPOWIEDZ".
+    FORMAT_ODPOWIEDZI:
+    - KONIECZNIE. Krótki proces myślowy dotyczący wyboru kolejnego pytania. KONIECZNIE MUSI być to poprzedzone zwrotem "PROCES_MYSLOWY: ".
+    - KONIECZNIE. Pytanie do konsultanta bankowego. KONIECZNIE MUSI być to poprzedzone zwrotem "ODPOWIEDZ: ".
     """
 
     return system_prompt
