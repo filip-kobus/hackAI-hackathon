@@ -13,8 +13,10 @@ from historyStorage import ChatHistoryStorage
 MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
+MAX_SPLIT_RETRIES = 5
+DEFAULT_MESSAGE = "Przepraszam, nie zrozumiałem. Czy mógłbyś powtórzyć?"
 
-MAX_MESSAGES_PER_QUESTION = 2
+MAX_MESSAGES_PER_QUESTION = 5
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -68,23 +70,53 @@ def main():
             lines[i] = words[1:]         
         return ' '.join(lines[0]), ' '.join(lines[1]).strip()
 
-    #============ Model workloop ================
+     #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
-    i = 0
-    for chosen_faq_question in parse_file_generator(faq_file):
-        i += 1
+    while(True):
+        chosen_faq_question = _choose_faq_question(faq_file)
         chat_history_storage = ChatHistoryStorage(chosen_faq_question)
-        storage_index = chat_history_storage.get_number_of_files()
-        if storage_index >= i:
-            continue
         system_prompt = _get_system_prompt(chosen_faq_question)
-        thought_process, first_message =  _split_message_parts(_send_start_signal(system_prompt))
+
+        # === Obsługa pierwszego komunikatu ===
+        first_message_processed = False
+        for attempt in range(MAX_SPLIT_RETRIES):
+            try:
+                raw_agent_response = _send_start_signal(system_prompt)
+                thought_process, first_message = _split_message_parts(raw_agent_response)
+                first_message_processed = True
+                break
+            except ValueError as e:
+                print(f"Błąd podczas przetwarzania odpowiedzi agenta (próba {attempt + 1}/{MAX_SPLIT_RETRIES}): {e}")
+                if attempt == MAX_SPLIT_RETRIES - 1:
+                    print("Nie udało się przetworzyć odpowiedzi agenta po maksymalnej liczbie prób.")
+                    break
+
+        if not first_message_processed:
+            first_message = DEFAULT_MESSAGE
+
         print("\nAI:\n" + first_message)
         received_message = _send_message_to_chatbot(first_message)
         print("\nmBank:\n" + str(received_message))
         chat_history_storage.save_dialog_fragment(model_message=first_message, chatbot_answer=received_message)
+
+        # === Obsługa kolejnych komunikatów ===
         for i in range(MAX_MESSAGES_PER_QUESTION):
-            thought_process, generated_message = _split_message_parts(_generate_message(system_prompt, received_message['response']))
+            message_processed_in_loop = False
+            for attempt in range(MAX_SPLIT_RETRIES):
+                try:
+                    raw_agent_response_loop = _generate_message(system_prompt, received_message['response'])
+                    thought_process, generated_message = _split_message_parts(raw_agent_response_loop)
+                    message_processed_in_loop = True
+                    break
+                except ValueError as e:
+                    print(f"Błąd podczas przetwarzania odpowiedzi agenta w pętli (próba {attempt + 1}/{MAX_SPLIT_RETRIES}): {e}")
+                    if attempt == MAX_SPLIT_RETRIES - 1:
+                        print("Nie udało się przetworzyć odpowiedzi agenta w pętli po maksymalnej liczbie prób.")
+                        break
+
+            if not message_processed_in_loop:
+                generated_message = DEFAULT_MESSAGE
+
             print("\nAI:\n" + generated_message)
             received_message = _send_message_to_chatbot(generated_message)
             print("\nmBank:\n" + str(received_message))
@@ -93,9 +125,6 @@ def main():
                 break
         chat_history_storage.save_to_file()
         _send_message_to_chatbot("[RESET]")
-        print("Proceeding to next question...")
-
-
 
     # # Do zaimplementowania wstrzykiwanie odpowiedniego FAQ i historii chatu!!!
     # faq = "Minimalna kwota kredytu to 10zł"
