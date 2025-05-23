@@ -2,8 +2,6 @@ import re
 from typing import Iterator
 import os
 
-scenario_path = os.path.abspath(r'data/scenariusze.md')
-
 def scenariusz_generator(filepath: str) -> Iterator[str]:
     """
     Generator that yields one scenario at a time from a markdown file
@@ -11,6 +9,8 @@ def scenariusz_generator(filepath: str) -> Iterator[str]:
     """
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
+
+    print("uruchomione")
     parts = re.split(r'^### SCENARIUSZ\s*', content, flags=re.MULTILINE)
     for part in parts:
         scenario = part.strip()
@@ -19,6 +19,7 @@ def scenariusz_generator(filepath: str) -> Iterator[str]:
 
 
 if __name__ == "__main__":
+    scenario_path = os.path.abspath(r'data/scenariusze.md')
     filepath = scenario_path
     count = 0
     for scenario in scenariusz_generator(filepath):
