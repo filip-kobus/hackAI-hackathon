@@ -78,7 +78,6 @@ def main():
         # grade_history.save_graded_chat(catalog_path)
         # grade_history.clear_history()
         agent.clear_history()
-        input("stop")
 
 
 

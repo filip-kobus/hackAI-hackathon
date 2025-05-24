@@ -15,6 +15,7 @@ class Chat:
         self.base_answer = data.get("odpowiedz")
         self.field = data.get("dziedzina")
         self.interactions = data.get("chat", [])
+        self.conversation = self.interactions[0]['chatbot_answer']['conversation']
     
     def get_chat_topic_json(self):
         topic = {}
@@ -39,6 +40,9 @@ class Chat:
     
     def get_chat_file_path(self):
         return os.path.basename(self.chat_file_path)
+
+    def get_conversation(self):
+        return self.conversation
     
 def get_chats(folder_path):
     json_files = [
