@@ -29,8 +29,8 @@ class ChatAdapter(BaseModel):
         try:
             data = json.loads(raw_responce)
             split = data.get("response").split("===========")
-        except json.JSONDecodeError:
-            print("Błąd parsowania JSON")
+        except json.JSONDecodeError as e:
+            print("Błąd parsowania JSON!!:")
             split = raw_responce.split("===========")
         responce_part = split[0]
         if len(split) > 1:
@@ -44,7 +44,7 @@ class ChatAdapter(BaseModel):
                 trace_index = i
                 break
         if trace_index is not None:
-            tags_part_lines = tags_part_lines[:trace_index+1]
+            tags_part_lines_without_additional = tags_part_lines[:trace_index+1]
             additional = tags_part_lines[trace_index+1:]
         else:
             additional = []
@@ -52,12 +52,12 @@ class ChatAdapter(BaseModel):
 
         result_responce = {}
 
-        if tags_part_lines is None:
+        if tags_part_lines_without_additional is None:
             result_responce["additional"] = "".join(additional)
             return result_responce  # pusta lista
 
         result_responce["response"] = responce_part
-        for tags_part_line in tags_part_lines[1:]:
+        for tags_part_line in tags_part_lines_without_additional[1:]:
             if ": " in tags_part_line:
                 key, value = tags_part_line.split(": ", 1)
                 key = key.strip().replace(" ", "-")

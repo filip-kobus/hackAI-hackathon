@@ -1,6 +1,7 @@
+import re
+
 def parse_file_generator(filepath):
     def parser(filepath: str) -> dict:
-        import re
         with open(filepath, 'r', encoding='utf-8') as file:
             lines = [line.rstrip() for line in file if line.strip()]
 
