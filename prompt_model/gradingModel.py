@@ -7,6 +7,7 @@ from chat_adapter import ChatAdapter
 from ai_agent import ModelChat
 from tools.tools import save_response_to_file
 from historyStorage import ChatHistoryStorage
+from chat import Chat, get_chats
 
 # === KONFIGURACJA ===
 MODEL_NAME = "gemma3:12b-it-qat"
@@ -62,17 +63,21 @@ def main():
     print(f"=== Starting {MODEL_NAME}... ===")
     # grade_history = GradeHistory()
     # Dla każdego pliku json z podanego folderu
+    folder_path = 'output'
     for chat in get_chats(folder_path):
-        chat = chat_parser(chat)
-        topic = get_chat_topic()
-        grade_history.set_chat_topic(topic)
+        # grade_history.set_chat_topic(chat.get_chat_topic_json())
+        print(chat.get_chat_topic_string())
         for chat_fragment in chat:
-            system_prompt = _get_system_prompt(topic)
+            system_prompt = _get_system_prompt(chat.get_chat_topic_string())
             model_answer = _generate_message(system_prompt=system_prompt, input_message=chat_fragment)
-            though_process, grade = grade_parser(model_answer)
-            grade_history.save_graded_answer(input_message= chat_fragment, grade = grade)
-        grade_history.save_graded_chat(catalog_path)
-        grade_history.clear_history()
+            though_process, grade = _split_message_parts(model_answer)
+            print(chat_fragment)
+            print(f'[Proces myślowy]: {though_process}\nWynik {grade}')
+        #     grade_history.save_graded_answer(input_message= chat_fragment, grade = grade)
+        # grade_history.save_graded_chat(catalog_path)
+        # grade_history.clear_history()
+        agent.clear_history()
+        input("stop")
 
 
 

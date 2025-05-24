@@ -35,7 +35,7 @@ class Chat:
             raise StopIteration
         interaction = self.interactions[self.index]
         self.index += 1
-        return f'[PYTANIE] {interaction['model_message']}\n[ODPOWIEDŹ] {interaction['chatbot_answer']}'
+        return f'[PYTANIE] {interaction['model_message']['response']}\n[ODPOWIEDŹ] {interaction['chatbot_answer']['response']}'
     
     def get_chat_file_path(self):
         return os.path.basename(self.chat_file_path)
