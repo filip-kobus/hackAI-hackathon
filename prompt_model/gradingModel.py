@@ -60,8 +60,19 @@ def main():
 
      #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
+    grade_history = GradeHistory()
     # Dla każdego pliku json z podanego folderu
-    for chat in get_chats(folder_):
+    for chat in get_chats(folder_path):
+        chat = chat_parser(chat)
+        topic = get_chat_topic()
+        grade_history.set_chat_topic(topic)
+        for chat_fragment in chat:
+            system_prompt = _get_system_prompt(topic)
+            model_answer = _generate_message(system_prompt=system_prompt, input_message=chat_fragment)
+            though_process, grade = grade_parser(model_answer)
+            grade_history.save_graded_answer(input_message= chat_fragment, grade = grade)
+        grade_history.save_graded_chat(catalog_path)
+        grade_history.clear_history()
 
 
 
