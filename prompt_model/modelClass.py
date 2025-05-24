@@ -78,7 +78,7 @@ def main():
 
     for scenario in scenariusz_generator(scenario_file):
         counter += 1
-        print(scenario)
+        scenario = scenario[:500]
         chat_history_storage.set_scenario(scenario)
         files_num = chat_history_storage.get_number_of_files()
         # GET_NUMBER_OF_FILES nie uwzględnia plików innych niż json!!!!
@@ -105,6 +105,8 @@ def main():
 
         print("\nAI:\n" + first_message)
         received_message = _send_message_to_chatbot(first_message)
+        if 'Jesteś zablokowany!!!' in received_message['response']:
+            break
         print("\nmBank:\n" + str(received_message))
         chat_history_storage.save_dialog_fragment(model_message=first_message, chatbot_answer=received_message)
 
