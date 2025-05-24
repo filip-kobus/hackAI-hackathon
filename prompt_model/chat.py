@@ -15,18 +15,17 @@ class Chat:
         self.field = data.get("dziedzina")
         self.interactions = data.get("chat", [])
         
-        # Bezpieczne pobieranie wartości self.conversation
-        self.conversation = None  # Ustawienie wartości domyślnej
-        if self.interactions:  # Sprawdzenie, czy lista interakcji nie jest pusta
+        self.conversation = None 
+        if self.interactions:
             first_interaction = self.interactions[0]
             if isinstance(first_interaction, dict):
                 chatbot_answer_dict = first_interaction.get('chatbot_answer')
                 if isinstance(chatbot_answer_dict, dict):
                     self.conversation = chatbot_answer_dict.get('conversation')
             else:
-                print(f"Ostrzeżenie: Pierwsza interakcja w pliku {self.chat_file_path} nie jest słownikiem.")
+                raise ValueError('Pierwsza interakcja nie jest słownikiem.')
         else:
-            print(f"Ostrzeżenie: Brak interakcji w pliku {self.chat_file_path} do pobrania ID konwersacji.")
+            raise ValueError('Brak interakcji do pobrania ID konwersacji.')
 
     def get_chat_topic_json(self):
         topic = {}
@@ -86,7 +85,7 @@ def get_chats(folder_path):
             print(f"Błąd przy przetwarzaniu pliku {file_name}: {e}")
         except json.JSONDecodeError as e:
             print(f"Błąd dekodowania JSON w pliku {file_name}: {e}")
-        except Exception as e: # Ogólny wyjątek do łapania innych problemów z plikiem
+        except Exception as e:
             print(f"Nieoczekiwany błąd przy przetwarzaniu pliku {file_name}: {e}")
     return chats_list
 

@@ -10,7 +10,7 @@ class GradeHistory:
         self.OUTPUT_DIRECTORY = os.path.abspath(output)
         self.history = {
             "id": None,
-            "topic": [],
+            "topic": "",
             "chat": []
         }
 
@@ -25,7 +25,7 @@ class GradeHistory:
     def split_q_and_a(self, q_and_a: str):
         q_and_a = q_and_a.split("\n")
         q = " ".join(q_and_a[0].split(" ")[1:])
-        a = " ".join(q_and_a[1].split(" ")[1:])
+        a = " ".join(" ".join(q_and_a[1:]).split(" ")[1:])
         q = f"user: {q}"
         a = f"chat: {a}"
         return q, a
@@ -36,7 +36,7 @@ class GradeHistory:
         """Dodaje oceniony fragment czatu do historii."""
         self.history['chat'].append({
             "question": question,
-            "answer:": answer,
+            "answer": answer,
             "category": category,
             "grade": grade
         })
@@ -72,10 +72,12 @@ class GradeHistory:
         
     def pick_lowest_score(self):
         lowest = 10
-        for i in range(len(self.history)):
-            grade = int(self.history["chat"][i]["grade"])
+        for item in self.history["chat"]:
+            grade = int(item["grade"])
             if grade == 404:
                 return 404
             elif grade < lowest:
                 lowest = grade
+        if grade < 1:
+            return 1
         return lowest
