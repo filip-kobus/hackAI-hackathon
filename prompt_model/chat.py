@@ -2,7 +2,6 @@ import json
 import os
 
 class Chat:
-
     def __init__(self, chat_file_path):
         self.chat_file_path = chat_file_path
         if not os.path.exists(self.chat_file_path):
@@ -15,8 +14,20 @@ class Chat:
         self.base_answer = data.get("odpowiedz")
         self.field = data.get("dziedzina")
         self.interactions = data.get("chat", [])
-        self.conversation = self.interactions[0]['chatbot_answer']['conversation']
-    
+        
+        # Bezpieczne pobieranie wartości self.conversation
+        self.conversation = None  # Ustawienie wartości domyślnej
+        if self.interactions:  # Sprawdzenie, czy lista interakcji nie jest pusta
+            first_interaction = self.interactions[0]
+            if isinstance(first_interaction, dict):
+                chatbot_answer_dict = first_interaction.get('chatbot_answer')
+                if isinstance(chatbot_answer_dict, dict):
+                    self.conversation = chatbot_answer_dict.get('conversation')
+            else:
+                print(f"Ostrzeżenie: Pierwsza interakcja w pliku {self.chat_file_path} nie jest słownikiem.")
+        else:
+            print(f"Ostrzeżenie: Brak interakcji w pliku {self.chat_file_path} do pobrania ID konwersacji.")
+
     def get_chat_topic_json(self):
         topic = {}
         topic["field"] = self.field
@@ -34,19 +45,48 @@ class Chat:
     def __next__(self):
         if self.index >= len(self.interactions):
             raise StopIteration
+        
         interaction = self.interactions[self.index]
         self.index += 1
-        return f'[PYTANIE] {interaction['model_message']['response']}\n[ODPOWIEDŹ] {interaction['chatbot_answer']['response']}'
+        
+        # Dodatkowe sprawdzenie, czy struktura jest poprawna przed próbą dostępu
+        model_message_content = "Brak danych pytania"
+        chatbot_answer_content = "Brak danych odpowiedzi"
+
+        if isinstance(interaction, dict):
+            model_message_dict = interaction.get('model_message')
+            if isinstance(model_message_dict, dict):
+                model_message_content = model_message_dict.get('response', "Brak treści pytania")
+            
+            chatbot_answer_dict = interaction.get('chatbot_answer')
+            if isinstance(chatbot_answer_dict, dict):
+                chatbot_answer_content = chatbot_answer_dict.get('response', "Brak treści odpowiedzi")
+        else:
+            print(f"Ostrzeżenie: Interakcja o indeksie {self.index -1} w pliku {self.chat_file_path} nie jest słownikiem.")
+            
+        return f'[PYTANIE] {model_message_content}\n[ODPOWIEDŹ] {chatbot_answer_content}'
     
     def get_chat_file_path(self):
         return os.path.basename(self.chat_file_path)
 
-    def get_conversation(self):
+    def get_conversation_id(self):
         return self.conversation
     
 def get_chats(folder_path):
     json_files = [
-    f for f in os.listdir(folder_path)
-    if f.endswith(".json") and os.path.isfile(os.path.join(folder_path, f))
+        f for f in os.listdir(folder_path)
+        if f.endswith(".json") and os.path.isfile(os.path.join(folder_path, f))
     ]
-    return [Chat(os.path.join(folder_path, file)) for file in json_files]
+    chats_list = []
+    for file_name in json_files:
+        file_path = os.path.join(folder_path, file_name)
+        try:
+            chats_list.append(Chat(file_path))
+        except FileNotFoundError as e:
+            print(f"Błąd przy przetwarzaniu pliku {file_name}: {e}")
+        except json.JSONDecodeError as e:
+            print(f"Błąd dekodowania JSON w pliku {file_name}: {e}")
+        except Exception as e: # Ogólny wyjątek do łapania innych problemów z plikiem
+            print(f"Nieoczekiwany błąd przy przetwarzaniu pliku {file_name}: {e}")
+    return chats_list
+

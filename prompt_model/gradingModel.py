@@ -8,6 +8,7 @@ from ai_agent import ModelChat
 from tools.tools import save_response_to_file
 from historyStorage import ChatHistoryStorage
 from chat import Chat, get_chats
+from gradeHistory import GradeHistory
 
 # === KONFIGURACJA ===
 MODEL_NAME = "gemma3:12b-it-qat"
@@ -15,9 +16,8 @@ OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
 SAVE_FILE_PATH = ""
 MAX_SPLIT_RETRIES = 5
 DEFAULT_MESSAGE = "Przepraszam, nie zrozumiałem. Czy mógłbyś powtórzyć?"
-
+DIR_PATH = "graded"
 MAX_MESSAGES_PER_QUESTION = 6
-
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -62,11 +62,12 @@ def main():
 
      #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
-    # grade_history = GradeHistory()
+    grade_history = GradeHistory(DIR_PATH)
     # Dla każdego pliku json z podanego folderu
     folder_path = 'output'
     for chat in get_chats(folder_path):
-        # grade_history.set_chat_topic(chat.get_chat_topic_json())
+        grade_history.set_chat_topic(chat.get_chat_topic_json())
+        grade_history.set_chat_id(chat.get_conversation_id())
         print(chat.get_chat_topic_string())
         for chat_fragment in chat:
             system_prompt = _get_system_prompt(chat.get_chat_topic_string())
@@ -74,13 +75,10 @@ def main():
             though_process, category, grade = _split_message_parts(model_answer)
             print(chat_fragment)
             print(f'\n[Proces myślowy]: {though_process}\n[Kategoria] {category}\n[Wynik] {grade}')
-        #     grade_history.save_graded_answer(input_message= chat_fragment, grade = grade)
-        # grade_history.save_graded_chat(catalog_path)
-        # grade_history.clear_history()
+            grade_history.save_graded_answer(q_and_a = chat_fragment, category = category, grade = grade)
+        grade_history.save_graded_chat(chat.get_chat_file_path())
+        grade_history.clear_history()
         agent.clear_history()
-
-
-
 
 def _get_system_prompt(scenario_context: str) -> str:
     system_prompt = f"""
@@ -120,8 +118,6 @@ def _get_system_prompt(scenario_context: str) -> str:
     """
 
     return system_prompt
-
-
 
 # === URUCHOMIENIE ===
 if __name__ == "__main__":
