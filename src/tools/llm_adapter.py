@@ -1,3 +1,8 @@
+"""
+Adapter for easy communication to our ai agent. It also contain history of message for current dialog.
+"""
+
+
 import requests
 
 class ModelChat:

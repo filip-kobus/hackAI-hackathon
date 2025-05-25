@@ -1,3 +1,10 @@
+"""
+File for starting ai agent whose task is to chat with mBank chatbot.
+Ai agent asks questions related to "mbank-pytania.md" file.
+All conversations are saved for later grading consisting of check if retreived information is consistent with informations from "mbank-pytania.md".
+"""
+
+
 import os
 import re
 

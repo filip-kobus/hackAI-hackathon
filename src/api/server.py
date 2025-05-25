@@ -1,3 +1,8 @@
+"""
+FastAPI server for using Selenium.
+"""
+
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from .worker import SeleniumWorker

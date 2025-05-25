@@ -1,3 +1,8 @@
+"""
+Selenium worker
+"""
+
+
 import chromedriver_autoinstaller
 from selenium import webdriver
 from dotenv import load_dotenv

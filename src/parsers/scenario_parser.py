@@ -1,12 +1,14 @@
+"""
+Generator that yields one scenario at a time from a markdown file
+where each scenario starts with '### SCENARIUSZ' and is followed by its description.
+"""
+
 import re
 from typing import Iterator
 import os
 
 def scenariusz_generator(filepath: str) -> Iterator[str]:
-    """
-    Generator that yields one scenario at a time from a markdown file
-    where each scenario starts with '### SCENARIUSZ' and is followed by its description.
-    """
+ 
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 

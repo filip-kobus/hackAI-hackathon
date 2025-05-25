@@ -1,3 +1,10 @@
+"""
+File for starting ai agent whose task is to chat with mBank chatbot.
+Ai agent acts accordingly to scenarios from "scenariusze.md" file.
+All conversations are saved for later manual grading.
+"""
+
+
 import os
 import re
 

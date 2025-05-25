@@ -1,3 +1,10 @@
+"""
+File for starting ai agent whose task is grade saved json files of chats.
+Grading is performed on the scale of 1 to 10, where 1 is completely unrelated and 10 is perfectly correct.
+Ai agent grades based on information from "mbank-pytania.md" file.
+All conversations are saved with grade and predicted category.
+"""
+
 import re
 
 from tools.llm_adapter import ModelChat

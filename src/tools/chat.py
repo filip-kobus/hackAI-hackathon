@@ -1,3 +1,8 @@
+"""
+Class of formatted chat content corresponding to one dialog.
+"""
+
+
 import json
 import os
 

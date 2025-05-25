@@ -1,3 +1,7 @@
+"""
+Parser for retrieving information from our prepared faq file named "mbank-pytania.md".
+"""
+
 import re
 
 def parse_file_generator(filepath):

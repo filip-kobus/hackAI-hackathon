@@ -1,3 +1,8 @@
+"""
+Class for handling grading history and dumping it into json file.
+"""
+
+
 import json
 import os
 import traceback

@@ -1,3 +1,8 @@
+"""
+Class for handling chat_history and dumping it into json file.
+"""
+
+
 import json
 import traceback
 import os

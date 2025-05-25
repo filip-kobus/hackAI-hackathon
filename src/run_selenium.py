@@ -1,3 +1,8 @@
+"""
+Module for starting uvicorn server needed for communication with mBank chatbot.
+"""
+
+
 import uvicorn
 
 if __name__ == "__main__":

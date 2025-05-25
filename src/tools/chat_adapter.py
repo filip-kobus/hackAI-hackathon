@@ -1,3 +1,15 @@
+"""
+Module for resolving communication between our ai agent and mBank chatbot.
+The module provides method for sending messages which also returns json of broken down response corresponding to mBank message format.
+Json includes keys like:
+- response
+- intents
+- conversation (id)
+- trace-id
+- additional
+"""
+
+
 import json
 from typing import Any, Dict
 from pydantic import BaseModel
