@@ -4,3 +4,4 @@ output/*.json
 graded/*
 .venv
 tests/__pycache__
+.vscode
