@@ -66,7 +66,7 @@ class GradeHistory:
         """Czyści historię po zapisie."""
         self.history = {
             "id": None,
-            "topic": [],
+            "topic": "",
             "chat": []
         }
         
