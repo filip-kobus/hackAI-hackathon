@@ -4,7 +4,7 @@ import shutil
 import os
 import json
 from unittest.mock import patch, mock_open
-from src.history.historyStorage import ChatHistoryStorage
+from history.chat_history import ChatHistoryStorage
 
 class TestChatHistoryStorage(unittest.TestCase):
 

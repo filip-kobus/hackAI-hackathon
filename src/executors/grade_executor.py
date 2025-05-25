@@ -1,17 +1,15 @@
 import re
 
-from src.tools.ai_agent import ModelChat
+from tools.llm_adapter import ModelChat
 from src.tools.chat import Chat, get_chats
-from src.history.gradeHistory import GradeHistory
+from history.grade_history import GradeHistory
 
 # === KONFIGURACJA ===
 MODEL_NAME = "gemma3:12b-it-qat"
 OLLAMA_API_URL = "http://localhost:11434/api/chat"
-SAVE_FILE_PATH = ""
 MAX_SPLIT_RETRIES = 5
 DEFAULT_MESSAGE = "Przepraszam, nie zrozumiałem. Czy mógłbyś powtórzyć?"
 DIR_PATH = "graded"
-MAX_MESSAGES_PER_QUESTION = 6
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -24,7 +22,6 @@ def my_tool(data):
     print("[MyTool] Narzędzie jeszcze niezaimplementowane.")
 
     # === INTERFEJSY ===
-    # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
 agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
 def _generate_message(system_prompt: str, input_message: str) -> str:
     try:

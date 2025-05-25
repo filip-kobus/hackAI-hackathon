@@ -3,8 +3,8 @@ import re
 
 from src.parsers.scenario_parser import scenariusz_generator
 from src.tools.chat_adapter import ChatAdapter
-from src.tools.ai_agent import ModelChat
-from src.history.historyStorage import ChatHistoryStorage
+from tools.llm_adapter import ModelChat
+from history.chat_history import ChatHistoryStorage
 
 # === KONFIGURACJA ===
 MODEL_NAME = "gemma3:12b-it-qat"

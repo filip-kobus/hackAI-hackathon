@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from src.tools.ai_agent import ModelChat
+from tools.llm_adapter import ModelChat
 
 class TestModelChat(unittest.TestCase):
 
@@ -18,7 +18,7 @@ class TestModelChat(unittest.TestCase):
         self.assertIsNone(self.model_chat.system_prompt)
         self.assertEqual(self.model_chat.messages, [])
 
-    @patch('src.tools.ai_agent.requests.post')
+    @patch('src.tools.llm_adapter.requests.post')
     def test_send_prompt_success(self, mock_post):
         self.model_chat.set_system_prompt("System prompt")
         mock_response = MagicMock()
@@ -32,12 +32,12 @@ class TestModelChat(unittest.TestCase):
         self.assertEqual(result, "Hello, user!")
         self.assertEqual(self.model_chat.messages[-1], {"role": "assistant", "content": "Hello, user!"})
 
-    @patch('src.tools.ai_agent.requests.post')
+    @patch('src.tools.llm_adapter.requests.post')
     def test_send_prompt_without_system_prompt_raises(self, mock_post):
         with self.assertRaises(ValueError):
             self.model_chat.send_prompt("Hi!")
 
-    @patch('src.tools.ai_agent.requests.post')
+    @patch('src.tools.llm_adapter.requests.post')
     def test_send_prompt_api_error(self, mock_post):
         self.model_chat.set_system_prompt("System prompt")
         mock_response = MagicMock()
@@ -52,7 +52,7 @@ class TestModelChat(unittest.TestCase):
             self.model_chat.send_prompt("Hi!")
         self.assertIn("Błąd zapytania do Ollama", str(context.exception))
 
-    @patch('src.tools.ai_agent.requests.post')
+    @patch('src.tools.llm_adapter.requests.post')
     def test_send_message_success(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -64,7 +64,7 @@ class TestModelChat(unittest.TestCase):
         result = self.model_chat.send_message("Hello!")
         self.assertEqual(result, "Assistant reply")
 
-    @patch('src.tools.ai_agent.requests.post')
+    @patch('src.tools.llm_adapter.requests.post')
     def test_send_message_api_error(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 400
