@@ -1,14 +1,10 @@
 import os
-import requests
-import json
 import re
 
-from faq_parser import parse_file_generator
-from scenario_parser import scenariusz_generator
-from chat_adapter import ChatAdapter
-from ai_agent import ModelChat
-from tools.tools import save_response_to_file
-from historyStorage import ChatHistoryStorage
+from src.parsers.scenario_parser import scenariusz_generator
+from src.tools.chat_adapter import ChatAdapter
+from src.tools.ai_agent import ModelChat
+from src.history.historyStorage import ChatHistoryStorage
 
 # === KONFIGURACJA ===
 MODEL_NAME = "gemma3:12b-it-qat"
@@ -18,9 +14,6 @@ MAX_SPLIT_RETRIES = 5
 DEFAULT_MESSAGE = "Przepraszam, nie zrozumiałem. Czy mógłbyś powtórzyć?"
 
 MAX_MESSAGES_PER_QUESTION = 6
-
-START_AT = 356
-FINISH_AT = 400
 
 # === FORMATOWANIE ODPOWIEDZI ===
 def format_response(response):
@@ -32,14 +25,26 @@ def format_response(response):
 def my_tool(data):
     print("[MyTool] Narzędzie jeszcze niezaimplementowane.")
 
+def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]:
+    agent_response_formatted = re.sub(r'\n+', '\n', agent_response_formatted)
+    lines = agent_response_formatted.strip().split('\n')
+    key_words = ['PROCES_MYSLOWY:', 'ODPOWIEDZ:']
+    
+    if len(lines) < len(key_words):
+        raise ValueError("Za mało komponentów odpowiedzi agenta!")      
+    for i in range(len(key_words)):
+        words = lines[i].split(' ')
+        if words[0] != key_words[i]:
+            raise ValueError("Niepoprawny komponent w odpowiedzi agenta!")  
+        lines[i] = words[1:]         
+    return ' '.join(lines[0]), ' '.join(lines[1]).strip(), ' '.join(lines[2]).strip()
+
 # === FUNKCJA GŁÓWNA ===
 def main():
     agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
     chat_adapter = ChatAdapter()
-    faq_file = os.path.abspath(r'data/mbank-pytania.md')
     scenario_file = os.path.abspath(r'data/scenariusze.md')
     # === INTERFEJSY ===
-    # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
     def _generate_message(system_prompt: str, input_message: str) -> str:
         try:
             if agent.system_prompt is None:    
@@ -56,20 +61,6 @@ def main():
 
     def _send_message_to_chatbot(message: str) -> str:
         return chat_adapter.send_message(message)
-    
-    def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]:
-        agent_response_formatted = re.sub(r'\n+', '\n', agent_response_formatted)
-        lines = agent_response_formatted.strip().split('\n')
-        key_words = ['PROCES_MYSLOWY:', 'ODPOWIEDZ:']
-        
-        if len(lines) < len(key_words):
-            raise ValueError("Za mało kompentów odpowiedzi agenta!")      
-        for i in range(len(key_words)):
-            words = lines[i].split(' ')
-            if words[0] != key_words[i]:
-                raise ValueError("Niepoprawny komponent w odpowiedzi agenta!")  
-            lines[i] = words[1:]         
-        return ' '.join(lines[0]), ' '.join(lines[1]).strip(), ' '.join(lines[2]).strip()
 
      #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
@@ -136,25 +127,6 @@ def main():
         agent.clear_history()
         chat_history_storage.save_to_file()
         _send_message_to_chatbot("[RESET]")
-
-    # # Do zaimplementowania wstrzykiwanie odpowiedniego FAQ i historii chatu!!!
-    # faq = "Minimalna kwota kredytu to 10zł"
-    # historia_chatu = ""
-    # system_prompt = _get_system_prompt(faq, historia_chatu)
-
-    # try:
-    #     agent_response = agent.send_prompt(system_prompt, "[START]")
-    #     agent_response_formatted = format_response(agent_response)
-    #     print("\nAI:\n" + agent_response_formatted)
-
-    #     mbank_answer = chat_adapter.send_message(agent_response_formatted)
-    #     print("\nmBank:\n" + str(mbank_answer))
-
-    #     save_response_to_file(agent_response_formatted, mbank_answer)
-
-    # except Exception as e:
-    #     print(f"Error: {e}")
-
 
 
 def _get_system_prompt(scenario_context: str) -> str:

@@ -1,18 +1,12 @@
-import os
 import re
 
-from faq_parser import parse_file_generator
-from scenario_parser import scenariusz_generator
-from chat_adapter import ChatAdapter
-from ai_agent import ModelChat
-from tools.tools import save_response_to_file
-from historyStorage import ChatHistoryStorage
-from chat import Chat, get_chats
-from gradeHistory import GradeHistory
+from src.tools.ai_agent import ModelChat
+from src.tools.chat import Chat, get_chats
+from src.history.gradeHistory import GradeHistory
 
 # === KONFIGURACJA ===
 MODEL_NAME = "gemma3:12b-it-qat"
-OLLAMA_API_URL = "http://172.27.27.79:11434/api/chat"
+OLLAMA_API_URL = "http://localhost:11434/api/chat"
 SAVE_FILE_PATH = ""
 MAX_SPLIT_RETRIES = 5
 DEFAULT_MESSAGE = "Przepraszam, nie zrozumiałem. Czy mógłbyś powtórzyć?"
@@ -29,37 +23,37 @@ def format_response(response):
 def my_tool(data):
     print("[MyTool] Narzędzie jeszcze niezaimplementowane.")
 
-# === FUNKCJA GŁÓWNA ===
-def main():
-    agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
-
     # === INTERFEJSY ===
     # TO-DO żeby tutaj podpinać rzeczy, a ich implementacja była wymienialna
-    def _generate_message(system_prompt: str, input_message: str) -> str:
-        try:
-            if agent.system_prompt is None:    
-                agent.set_system_prompt(system_prompt)
-            agent_response = agent.send_prompt(input_message)
-            agent_response_formatted = format_response(agent_response)
-        except Exception as e:
-            print(f"Error while generating agent message: {e}")
-            agent_response_formatted = "PROCES_MYSLOWY: Blad podczas generowania odpowiedzi\n\nKATEGORIA: Error\n\nOCENA: 404"
-        return agent_response_formatted
-        
-    def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]:
+agent = ModelChat(MODEL_NAME, OLLAMA_API_URL)
+def _generate_message(system_prompt: str, input_message: str) -> str:
+    try:
+        if agent.system_prompt is None:    
+            agent.set_system_prompt(system_prompt)
+        agent_response = agent.send_prompt(input_message)
+        agent_response_formatted = format_response(agent_response)
+    except Exception as e:
+        print(f"Error while generating agent message: {e}")
+        agent_response_formatted = "PROCES_MYSLOWY: Blad podczas generowania odpowiedzi\n\nKATEGORIA: Error\n\nOCENA: 404"
+    return agent_response_formatted
+    
+def _split_message_parts(agent_response_formatted: str) -> tuple[str, str]:
 
-        wzorzec = r"PROCES_MYSLOWY:\s*(.*?)\s*KATEGORIA:\s*(.*?)\s*OCENA:\s*(\d+)"
-        dopasowanie = re.search(wzorzec, agent_response_formatted, re.DOTALL)
+    wzorzec = r"PROCES_MYSLOWY:\s*(.*?)\s*KATEGORIA:\s*(.*?)\s*OCENA:\s*(\d+)"
+    dopasowanie = re.search(wzorzec, agent_response_formatted, re.DOTALL)
 
-        if dopasowanie:
-            proces_myslowy = dopasowanie.group(1).strip()
-            kategoria = dopasowanie.group(2).strip()
-            ocena = dopasowanie.group(3).strip()
-            return proces_myslowy, kategoria, ocena
-        else:
-            print("Nie udało się dopasować wzorca.")
-            return "Blad dopasowywania wzorca", "Error", 404
+    if dopasowanie:
+        proces_myslowy = dopasowanie.group(1).strip()
+        kategoria = dopasowanie.group(2).strip()
+        ocena = dopasowanie.group(3).strip()
+        return proces_myslowy, kategoria, ocena
+    else:
+        print("Nie udało się dopasować wzorca.")
+        return "Blad dopasowywania wzorca", "Error", 404
 
+# === FUNKCJA GŁÓWNA ===
+def main():
+    
      #============ Model workloop ================
     print(f"=== Starting {MODEL_NAME}... ===")
     grade_history = GradeHistory(DIR_PATH)
